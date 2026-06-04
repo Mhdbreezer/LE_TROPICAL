@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    <!-- ADMIN STATS -->
+    {% if role == 'Administrateur' %}
+    <div class="col-md-3"><div class="card p-3 border-0 bg-white"><div class="d-flex align-items-center"><div class="rounded-3 p-3 bg-primary bg-opacity-10 text-primary"><i class="bi bi-people-fill fs-3"></i></div><div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.total_patients }}</h5><small class="text-muted">Total Patients</small></div></div></div></div>
+    <div class="col-md-3"><div class="card p-3 border-0 bg-white"><div class="d-flex align-items-center"><div class="rounded-3 p-3 bg-success bg-opacity-10 text-success"><i class="bi bi-person-badge-fill fs-3"></i></div><div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.total_medecins }}</h5><small class="text-muted">Médecins Actifs</small></div></div></div></div>
+    <div class="col-md-3"><div class="card p-3 border-0 bg-white"><div class="d-flex align-items-center"><div class="rounded-3 p-3 bg-warning bg-opacity-10 text-warning"><i class="bi bi-building fs-3"></i></div><div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.total_services }}</h5><small class="text-muted">Services</small></div></div></div></div>
+    <div class="col-md-3"><div class="card p-3 border-0 bg-white"><div class="d-flex align-items-center"><div class="rounded-3 p-3 bg-danger bg-opacity-10 text-danger"><i class="bi bi-wallet2 fs-3"></i></div><div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.recette_totale }}</h5><small class="text-muted">Recettes (CFA)</small></div></div></div></div>
+    
+    <!-- DOCTOR STATS -->
+    {% elif role == 'Medecin' %}
+    <div class="col-md-4"><div class="card p-3 border-0 bg-white"><div class="d-flex align-items-center"><div class="rounded-3 p-3 bg-success bg-opacity-10 text-success"><i class="bi bi-calendar-check fs-3"></i></div><div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.rdv_today }}</h5><small class="text-muted">RDV Aujourd'hui</small></div></div></div></div>
+    <div class="col-md-4"><div class="card p-3 border-0 bg-white"><div class="d-flex align-items-center"><div class="rounded-3 p-3 bg-primary bg-opacity-10 text-primary"><i class="bi bi-journal-medical fs-3"></i></div><div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.consult_month }}</h5><small class="text-muted">Total Consultations</small></div></div></div></div>
+    <div class="col-md-4"><div class="card p-3 border-0 bg-white"><div class="d-flex align-items-center"><div class="rounded-3 p-3 bg-info bg-opacity-10 text-info"><i class="bi bi-person-lines-fill fs-3"></i></div><div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.patients_service }}</h5><small class="text-muted">Mes Patients</small></div></div></div></div>
+    
+    <!-- PHARMACIST STATS -->
+    {% elif role == 'Pharmacien' %}
+    <div class="col-md-6"><div class="card p-3 border-0 bg-white"><div class="d-flex align-items-center"><div class="rounded-3 p-3 bg-primary bg-opacity-10 text-primary"><i class="bi bi-capsule fs-3"></i></div><div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.total_meds }}</h5><small class="text-muted">Médicaments</small></div></div></div></div>
+    <div class="col-md-6"><div class="card p-3 border-0 bg-white"><div class="d-flex align-items-center"><div class="rounded-3 p-3 bg-danger bg-opacity-10 text-danger"><i class="bi bi-exclamation-triangle-fill fs-3"></i></div><div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.low_stock }}</h5><small class="text-muted">Alertes Stock Bas</small></div></div></div></div>
+    
+    <!-- RECEPTION STATS -->
+    {% elif role == 'Receptionniste' %}
+    <div class="col-md-6"><div class="card p-3 border-0 bg-white"><div class="d-flex align-items-center"><div class="rounded-3 p-3 bg-primary bg-opacity-10 text-primary"><i class="bi bi-calendar-check fs-3"></i></div><div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.rdv_today }}</h5><small class="text-muted">RDV Aujourd'hui</small></div></div></div></div>
+    <div class="col-md-6"><div class="card p-3 border-0 bg-white"><div class="d-flex align-items-center"><div class="rounded-3 p-3 bg-warning bg-opacity-10 text-warning"><i class="bi bi-hourglass-split fs-3"></i></div><div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.waiting }}</h5><small class="text-muted">Patients en attente</small></div></div></div></div>
+    {% endif %}
+    </div>
+
+    <div class="row g-4">
+    <div class="col-md-8">
+        <div class="card border-0 bg-white p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0">Rendez-vous Récents</h5>
+                <a href="{{ url_for('main.list_rdvs') }}" class="btn btn-sm btn-outline-success">Voir tout</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Patient</th>
+                            <th>Heure</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rdv in recent_rdvs %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-light p-2 me-2">{{ rdv.patient.prenom[0] }}{{ rdv.patient.nom[0] }}</div>
+                                    {{ rdv.patient.prenom }} {{ rdv.patient.nom }}
+                                </div>
+                            </td>
+                            <td>{{ rdv.heure_rdv.strftime('%H:%M') }}</td>
+                            <td><span class="badge {{ 'bg-info' if rdv.type_rdv == 'Téléconsultation' else 'bg-secondary' }} bg-opacity-10 text-{{ 'info' if rdv.type_rdv == 'Téléconsultation' else 'dark' }}">{{ rdv.type_rdv }}</span></td>
+                            <td>
+                                <span class="badge {{ 'bg-success' if rdv.statut == 'Terminé' else 'bg-warning' }}">
+                                    {{ rdv.statut }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">Aucun rendez-vous récent.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        {% if role == 'Patient' %}
+        <div class="card border-0 bg-white p-4 h-100">
+            <h5 class="fw-bold mb-4">Mes Documents</h5>
+            <div class="list-group list-group-flush">
+                {% if current_user.patient %}
+                    {% for rdv in current_user.patient.rdvs if rdv.consultation %}
+                        <div class="list-group-item px-0 py-3 border-0 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="mb-0 fw-bold">Consultation</p>
+                                    <small class="text-muted">{{ rdv.consultation.date_consultation.strftime('%d %b %Y') }}</small>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-light btn-sm rounded-circle" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu shadow border-0">
+                                        {% if rdv.consultation.facture %}
+                                        <li><a class="dropdown-item" href="{{ url_for('main.pdf_facture', facture_id=rdv.consultation.facture.id) }}" target="_blank"><i class="bi bi-file-pdf text-primary me-2"></i>Facture</a></li>
+                                        {% endif %}
+                                        {% if rdv.consultation.ordonnance %}
+                                        <li><a class="dropdown-item" href="{{ url_for('main.pdf_ordonnance', ordonnance_id=rdv.consultation.ordonnance.id) }}" target="_blank"><i class="bi bi-file-medical text-danger me-2"></i>Ordonnance</a></li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">Aucun document disponible.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="card border-0 bg-white p-4 h-100">
+            <h5 class="fw-bold mb-4">Actions Rapides</h5>
+            <div class="d-grid gap-3">
+                {% if role == 'Pharmacien' %}
+                <a href="{{ url_for('main.nouveau_medicament') }}" class="btn btn-light text-start p-3 border-0 shadow-sm">
+                    <i class="bi bi-capsule-pill text-warning me-2"></i> Ajouter Médicament
+                </a>
+                {% elif role == 'Medecin' %}
+                <a href="{{ url_for('main.list_rdvs') }}" class="btn btn-light text-start p-3 border-0 shadow-sm">
+                    <i class="bi bi-calendar-check text-success me-2"></i> Mes RDV du jour
+                </a>
+                {% else %}
+                    {% if role == 'Receptionniste' %}
+                    <a href="{{ url_for('main.nouveau_patient') }}" class="btn btn-light text-start p-3 border-0 shadow-sm">
+                        <i class="bi bi-person-plus-fill text-success me-2"></i> Nouveau Patient
+                    </a>
+                    <a href="{{ url_for('main.nouveau_rdv') }}" class="btn btn-light text-start p-3 border-0 shadow-sm">
+                        <i class="bi bi-calendar-plus-fill text-primary me-2"></i> Planifier RDV
+                    </a>
+                    <a href="{{ url_for('main.nouveau_rdv') }}?statut=Urgence" class="btn btn-danger text-start p-3 border-0 shadow-sm">
+                        <i class="bi bi-lightning-fill text-white me-2"></i> Triage / Urgence
+                    </a>
+                    {% elif role == 'Patient' %}
+                    <a href="{{ url_for('main.nouveau_rdv') }}" class="btn btn-light text-start p-3 border-0 shadow-sm">
+                        <i class="bi bi-calendar-plus-fill text-primary me-2"></i> Planifier mon RDV
+                    </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    </div>
+    {% endblock %}
+

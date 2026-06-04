@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Rapports & Statistiques{% endblock %}
+
+{% block content %}
+<h3 class="fw-bold mb-4">Analyses & Performance</h3>
+
+<div class="row g-4">
+    <!-- Appointments Chart -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm p-4">
+            <h5 class="fw-bold mb-3">Répartition des Rendez-vous</h5>
+            <canvas id="rdvChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Revenue Chart -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm p-4">
+            <h5 class="fw-bold mb-3">Évolution des Recettes (CFA)</h5>
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Gender Chart -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-4">
+            <h5 class="fw-bold mb-3">Démographie Patients</h5>
+            <canvas id="genderChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm p-4 h-100">
+            <h5 class="fw-bold mb-3">Indicateurs Clés</h5>
+            <div class="row text-center mt-3">
+                <div class="col-md-4">
+                    <h2 class="fw-bold text-success">{{ rev_data|sum|int }}</h2>
+                    <p class="text-muted">Chiffre d'Affaire Total</p>
+                </div>
+                <div class="col-md-4">
+                    <h2 class="fw-bold text-primary">{{ rdv_data|sum }}</h2>
+                    <p class="text-muted">Total Consultations</p>
+                </div>
+                <div class="col-md-4">
+                    <h2 class="fw-bold text-warning">{{ gender_data|sum }}</h2>
+                    <p class="text-muted">Patients Enregistrés</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // RDV Chart
+    new Chart(document.getElementById('rdvChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ rdv_labels|tojson }},
+            datasets: [{
+                data: {{ rdv_data|tojson }},
+                backgroundColor: ['#00853f', '#fdef42', '#e31b23', '#007bff']
+            }]
+        }
+    });
+
+    // Revenue Chart
+    new Chart(document.getElementById('revenueChart'), {
+        type: 'line',
+        data: {
+            labels: {{ rev_labels|tojson }},
+            datasets: [{
+                label: 'Recettes',
+                data: {{ rev_data|tojson }},
+                borderColor: '#00853f',
+                tension: 0.1,
+                fill: true,
+                backgroundColor: 'rgba(0, 133, 63, 0.1)'
+            }]
+        }
+    });
+
+    // Gender Chart
+    new Chart(document.getElementById('genderChart'), {
+        type: 'pie',
+        data: {
+            labels: {{ gender_labels|tojson }},
+            datasets: [{
+                data: {{ gender_data|tojson }},
+                backgroundColor: ['#007bff', '#e83e8c']
+            }]
+        }
+    });
+</script>
+{% endblock %}

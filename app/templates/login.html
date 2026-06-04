@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block auth_content %}
+<div class="auth-bg">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card shadow-lg border-0 overflow-hidden">
+                    <div class="p-1" style="background: linear-gradient(to right, var(--sn-green), var(--sn-yellow), var(--sn-red));"></div>
+                    <div class="card-body p-5 text-center">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Coat_of_arms_of_Senegal.svg/1200px-Coat_of_arms_of_Senegal.svg.png" 
+                             alt="Armoiries du Sénégal" style="height: 100px;" class="mb-4">
+                        
+                        <h3 class="fw-bold mb-0" style="color: var(--sn-green);">SGRDMS</h3>
+                        <p class="text-muted text-uppercase small fw-bold mb-4">Ministère de la Santé - Le Tropical</p>
+                        
+                        <form method="POST" action="">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="username" name="username" placeholder="Nom d'utilisateur" required>
+                                <label for="username">Nom d'utilisateur</label>
+                            </div>
+                            <div class="form-floating mb-4">
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Mot de passe" required>
+                                <label for="password">Mot de passe</label>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-senegal w-100 py-3 shadow">
+                                <i class="bi bi-box-arrow-in-right me-2"></i> Accéder au portail
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card-footer bg-white border-0 text-center pb-4">
+                        <small class="text-muted">Système de Gestion des Rendez-vous et Dossiers Médicaux</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

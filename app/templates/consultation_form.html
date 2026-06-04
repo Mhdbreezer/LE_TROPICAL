@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-dark text-white">Infos Patient</div>
+            <div class="card-body">
+                <h5>{{ rdv.patient.prenom }} {{ rdv.patient.nom }}</h5>
+                <p class="text-muted mb-1">Âge: {{ (datetime.now().date() - rdv.patient.date_naissance).days // 365 }} ans</p>
+                <p class="text-muted">Sexe: {{ rdv.patient.sexe }}</p>
+                <hr>
+                <h6>Antécédents</h6>
+                <p class="small text-danger">{{ rdv.patient.dossier.antecedents or 'Néant' }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 border-0">
+                <h4 class="mb-0" style="color: var(--sn-green);">{{ title }}</h4>
+            </div>
+            <div class="card-body px-4 pb-4">
+                <form method="POST" action="">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.type_consult.label(class="form-label") }}
+                        {{ form.type_consult(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.diagnostic.label(class="form-label") }}
+                        {{ form.diagnostic(class="form-control", rows=4) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.observations.label(class="form-label") }}
+                        {{ form.observations(class="form-control", rows=3) }}
+                    </div>
+                    <div class="mt-4 d-grid">
+                        {{ form.submit(class="btn btn-senegal") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

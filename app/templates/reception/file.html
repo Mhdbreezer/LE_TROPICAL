@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-4">
+    <h2>File d'Attente</h2>
+    <p class="text-muted">Patients attendus aujourd'hui ({{ datetime.now().strftime('%d/%m/%Y') }})</p>
+</div>
+<div class="card border-0 shadow-sm"><div class="card-body">
+    <table class="table align-middle">
+        <thead><tr><th>Heure</th><th>Patient</th><th>Médecin</th><th>Statut</th><th>Action</th></tr></thead>
+        <tbody>
+            {% for rdv in rdvs %}
+            <tr>
+                <td>{{ rdv.heure_rdv.strftime('%H:%M') }}</td>
+                <td>{{ rdv.patient.prenom }} {{ rdv.patient.nom }}</td>
+                <td>Dr {{ rdv.medecin.nom }}</td>
+                <td>
+                    <span class="badge {{ 'bg-success' if rdv.statut == 'En attente' else 'bg-warning' }}">
+                        {{ rdv.statut }}
+                    </span>
+                    <span class="badge {{ 'bg-danger' if rdv.priorite == 3 else 'bg-info' }}">
+                        {{ 'Urgent' if rdv.priorite > 1 else 'Normal' }}
+                    </span>
+                </td>
+                <td>
+                    {% if rdv.statut == 'Programmé' %}
+                    <a href="{{ url_for('main.marquer_arrive', rdv_id=rdv.id) }}" class="btn btn-sm btn-success">Marquer Arrivé</a>
+                    {% endif %}
+                    <a href="{{ url_for('main.modifier_rdv', rdv_id=rdv.id) }}" class="btn btn-sm btn-outline-warning">Modifier</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div></div>
+{% endblock %}

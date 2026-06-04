@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-4 text-center">
+            <div class="rounded-circle bg-success bg-opacity-10 text-success d-inline-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                <i class="bi bi-person-fill fs-1"></i>
+            </div>
+            <h4 class="fw-bold">{{ patient.prenom }} {{ patient.nom }}</h4>
+            <p class="text-muted">Dossier N° {{ patient.id }}</p>
+            <div class="d-grid gap-2">
+                <a href="{{ url_for('main.pdf_dossier', patient_id=patient.id) }}" target="_blank" class="btn btn-senegal">
+                    <i class="bi bi-file-earmark-pdf me-2"></i> Télécharger Dossier
+                </a>
+            </div>
+            <hr>
+            <div class="text-start">
+                <p><strong>Né(e) le:</strong> {{ patient.date_naissance.strftime('%d/%m/%Y') }}</p>
+                <p><strong>Sexe:</strong> {{ patient.sexe }}</p>
+                <p><strong>Téléphone:</strong> {{ patient.telephone }}</p>
+                <p><strong>Centre:</strong> {{ patient.centre.nom_centre if patient.centre else 'Non défini' }}</p>
+                <p><strong>Assurance:</strong> {{ patient.assurance.nom_assurance if patient.assurance else 'Néant' }}</p>
+            </div>
+        </div>
+        
+        <div class="card border-0 shadow-sm p-4 mt-4 bg-danger bg-opacity-10">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="fw-bold text-danger mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Alertes</h5>
+                {% if current_user.role in ['Administrateur', 'Medecin'] %}
+                <a href="{{ url_for('main.modifier_dossier', patient_id=patient.id) }}" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-pencil"></i>
+                </a>
+                {% endif %}
+            </div>
+            <p class="mb-1"><strong>Groupe:</strong> <span class="badge bg-danger">{{ patient.dossier.groupe_sanguin or '?' }}</span></p>
+            <p class="mb-1"><strong>Allergies:</strong> {{ patient.dossier.allergies or 'Néant' }}</p>
+            <p class="mb-0"><strong>Antécédents:</strong> {{ patient.dossier.antecedents or 'Néant' }}</p>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm p-4">
+            <h5 class="fw-bold mb-4">Historique des Consultations</h5>
+            <div class="timeline">
+                {% for rdv in patient.rdvs if rdv.consultation %}
+                <div class="border-start border-3 border-success ps-4 pb-4 position-relative">
+                    <div class="position-absolute start-0 translate-middle-x bg-success rounded-circle" style="width: 12px; height: 12px; margin-left: -2px; margin-top: 6px;"></div>
+                    <div class="d-flex justify-content-between">
+                        <h6 class="fw-bold">{{ rdv.consultation.date_consultation.strftime('%d/%m/%Y') }}</h6>
+                        <span class="badge bg-light text-dark">Dr {{ rdv.medecin.nom }}</span>
+                    </div>
+                    <p class="mb-1"><strong>Diagnostic:</strong> {{ rdv.consultation.diagnostic }}</p>
+                    <p class="small text-muted">{{ rdv.consultation.observations }}</p>
+                    {% if rdv.consultation.ordonnance %}
+                    <a href="{{ url_for('main.pdf_ordonnance', ordonnance_id=rdv.consultation.ordonnance.id) }}" target="_blank" class="btn btn-sm btn-outline-danger mt-2">
+                        <i class="bi bi-file-medical me-1"></i> Ordonnance PDF
+                    </a>
+                    {% endif %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-4">Aucune consultation enregistrée pour ce patient.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

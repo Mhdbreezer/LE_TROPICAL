@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between mb-4">
+    <h2>Gestion des Services</h2>
+    <a href="{{ url_for('main.nouveau_service') }}" class="btn btn-senegal">+ Nouveau Service</a>
+</div>
+<div class="card border-0 shadow-sm"><div class="card-body">
+    <table class="table">
+        <thead><tr><th>ID</th><th>Nom</th><th>Description</th></tr></thead>
+        <tbody>
+            {% for s in services %}
+            <tr><td>{{ s.id }}</td><td>{{ s.nom_service }}</td><td>{{ s.description }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div></div>
+{% endblock %}

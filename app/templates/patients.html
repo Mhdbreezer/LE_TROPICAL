@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Liste des Patients{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Gestion des Patients</h2>
+    <a href="{{ url_for('main.nouveau_patient') }}" class="btn btn-senegal shadow-sm">+ Nouveau Patient</a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>N° Dossier</th>
+                    <th>Nom & Prénom</th>
+                    <th>Sexe</th>
+                    <th>Téléphone</th>
+                    <th>Date Naissance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td><strong>{{ patient.id }}</strong></td>
+                    <td>{{ patient.prenom }} {{ patient.nom }}</td>
+                    <td>{{ patient.sexe }}</td>
+                    <td>{{ patient.telephone }}</td>
+                    <td>{{ patient.date_naissance.strftime('%d/%m/%Y') }}</td>
+                    <td>
+                        <a href="{{ url_for('main.patient_details', patient_id=patient.id) }}" class="btn btn-sm btn-outline-primary">Dossier Médical</a>
+                        {% if current_user.role in ['Administrateur', 'Receptionniste'] %}
+                            <a href="{{ url_for('main.nouveau_rdv') }}" class="btn btn-sm btn-outline-success">Prendre RDV</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">Aucun patient enregistré.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

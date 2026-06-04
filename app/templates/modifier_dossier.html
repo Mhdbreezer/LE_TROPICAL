@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier Dossier Médical{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm p-4">
+            <h4 class="fw-bold mb-4 text-center">Mise à jour Médicale : {{ patient.prenom }} {{ patient.nom }}</h4>
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-danger">Allergies (Informations critiques)</label>
+                    <textarea name="allergies" class="form-control" rows="3">{{ patient.dossier.allergies }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Antécédents Médicaux</label>
+                    <textarea name="antecedents" class="form-control" rows="4">{{ patient.dossier.antecedents }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Groupe Sanguin</label>
+                    <select name="groupe_sanguin" class="form-select">
+                        <option value="A+" {{ 'selected' if patient.dossier.groupe_sanguin == 'A+' }}>A+</option>
+                        <option value="A-" {{ 'selected' if patient.dossier.groupe_sanguin == 'A-' }}>A-</option>
+                        <option value="B+" {{ 'selected' if patient.dossier.groupe_sanguin == 'B+' }}>B+</option>
+                        <option value="B-" {{ 'selected' if patient.dossier.groupe_sanguin == 'B-' }}>B-</option>
+                        <option value="AB+" {{ 'selected' if patient.dossier.groupe_sanguin == 'AB+' }}>AB+</option>
+                        <option value="AB-" {{ 'selected' if patient.dossier.groupe_sanguin == 'AB-' }}>AB-</option>
+                        <option value="O+" {{ 'selected' if patient.dossier.groupe_sanguin == 'O+' }}>O+</option>
+                        <option value="O-" {{ 'selected' if patient.dossier.groupe_sanguin == 'O-' }}>O-</option>
+                    </select>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-senegal">Mettre à jour le dossier</button>
+                    <a href="{{ url_for('main.patient_details', patient_id=patient.id) }}" class="btn btn-light">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

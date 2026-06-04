@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-dark text-white">Nouvelle Ligne de Prescription</div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.medicament_id.label(class="form-label") }}
+                        {{ form.medicament_id(class="form-select") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.posologie.label(class="form-label") }}
+                        {{ form.posologie(class="form-control", placeholder="ex: 1 mat - 1 soir") }}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.duree.label(class="form-label") }}
+                            {{ form.duree(class="form-control", placeholder="ex: 5 jours") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.quantite.label(class="form-label") }}
+                            {{ form.quantite(class="form-control", type="number") }}
+                        </div>
+                    </div>
+                    <div class="mt-2 d-grid">
+                        {{ form.submit(class="btn btn-senegal") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                <h4 class="mb-0" style="color: var(--sn-green);">Ordonnance N° {{ ordonnance.id }}</h4>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('main.pdf_ordonnance', ordonnance_id=ordonnance.id) }}" target="_blank" class="btn btn-sm btn-danger">Télécharger PDF</a>
+                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-sm btn-outline-secondary">Terminer</a>
+                </div>
+            </div>
+            <div class="card-body px-4 pb-4">
+                <p><strong>Patient:</strong> {{ consultation.rdv.patient.prenom }} {{ consultation.rdv.patient.nom }}</p>
+                <p><strong>Date:</strong> {{ ordonnance.date_ordonnance.strftime('%d/%m/%Y') }}</p>
+                <hr>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Médicament</th>
+                            <th>Posologie</th>
+                            <th>Durée</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ligne in ordonnance.lignes %}
+                        <tr>
+                            <td>{{ ligne.medicament.nom_medicament }}</td>
+                            <td>{{ ligne.posologie }}</td>
+                            <td>{{ ligne.duree }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger">x</button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">Aucun médicament prescrit.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

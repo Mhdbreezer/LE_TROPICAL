@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-6"><div class="card border-0 shadow-sm p-4">
+    <h4 class="mb-4">Nouveau Service</h4>
+    <form method="POST">{{ form.hidden_tag() }}
+        <div class="mb-3">{{ form.nom_service.label(class="form-label") }}{{ form.nom_service(class="form-control") }}</div>
+        <div class="mb-3">{{ form.description.label(class="form-label") }}{{ form.description(class="form-control") }}</div>
+        <button type="submit" class="btn btn-senegal w-100">Créer</button>
+    </form>
+</div></div></div>
+{% endblock %}

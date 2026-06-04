@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between mb-4">
+    <h2>Gestion des Médecins</h2>
+    <a href="{{ url_for('main.nouveau_medecin') }}" class="btn btn-senegal">+ Nouveau Médecin</a>
+</div>
+<div class="card border-0 shadow-sm"><div class="card-body">
+    <table class="table">
+        <thead><tr><th>Nom</th><th>Spécialité</th><th>Service</th><th>Téléphone</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for m in medecins %}
+            <tr><td>Dr {{ m.prenom }} {{ m.nom }}</td><td>{{ m.specialite }}</td><td>{{ m.service.nom_service }}</td><td>{{ m.telephone }}</td>
+            <td><a href="{{ url_for('main.modifier_medecin', med_id=m.id) }}" class="btn btn-sm btn-outline-warning">Transférer</a></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div></div>
+{% endblock %}

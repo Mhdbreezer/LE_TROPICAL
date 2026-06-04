@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Inventaire Pharmacie{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Gestion de l'Inventaire</h2>
+    <a href="{{ url_for('main.nouveau_medicament') }}" class="btn btn-senegal shadow-sm">+ Ajouter un Médicament</a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Nom</th>
+                    <th>Forme</th>
+                    <th>Dosage</th>
+                    <th>Stock Actuel</th>
+                    <th>Seuil Alerte</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for med in medicaments %}
+                {% set total_stock = 0 %}
+                {% for lot in med.lots %}{% set total_stock = total_stock + lot.qte_restante %}{% endfor %}
+                <tr>
+                    <td><strong>{{ med.nom_medicament }}</strong></td>
+                    <td>{{ med.forme }}</td>
+                    <td>{{ med.dosage }}</td>
+                    <td>{{ total_stock }}</td>
+                    <td>{{ med.seuil_alerte }}</td>
+                    <td>
+                        {% if total_stock <= med.seuil_alerte %}
+                            <span class="badge bg-danger">Alerte Stock</span>
+                        {% else %}
+                            <span class="badge bg-success">En Stock</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">Aucun médicament en inventaire.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

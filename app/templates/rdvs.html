@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Planning des Rendez-vous{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Planning des Rendez-vous</h2>
+    <a href="{{ url_for('main.nouveau_rdv') }}" class="btn btn-senegal shadow-sm">+ Planifier un RDV</a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Date & Heure</th>
+                    <th>Patient</th>
+                    <th>Médecin</th>
+                    <th>Type</th>
+                    <th>Priorité</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rdv in rdvs %}
+                <tr>
+                    <td>{{ rdv.date_rdv.strftime('%d/%m/%Y') }} à {{ rdv.heure_rdv.strftime('%H:%M') }}</td>
+                    <td>{{ rdv.patient.prenom }} {{ rdv.patient.nom }}</td>
+                    <td>Dr {{ rdv.medecin.nom }}</td>
+                    <td>
+                        <span class="badge {{ 'bg-info' if rdv.type_rdv == 'Téléconsultation' else 'bg-secondary' }}">
+                            {{ rdv.type_rdv }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if rdv.priorite == 3 %}
+                            <span class="badge bg-danger">Urgence Vitale</span>
+                        {% elif rdv.priorite == 2 %}
+                            <span class="badge bg-warning">Urgent</span>
+                        {% else %}
+                            <span class="badge bg-success">Normal</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ rdv.statut }}</td>
+                    <td>
+                        {% if rdv.statut == 'Programmé' %}
+                            {% if current_user.role == 'Medecin' or current_user.role == 'Administrateur' %}
+                                <a href="{{ url_for('main.nouvelle_consultation', rdv_id=rdv.id) }}" class="btn btn-sm btn-success">Consulter</a>
+                            {% endif %}
+                            
+                            {% if rdv.type_rdv == 'Téléconsultation' %}
+                                <a href="https://meet.jit.si/SGRDMS-Tropical-{{ rdv.id }}" target="_blank" class="btn btn-sm btn-info text-white">Vidéo-conférence</a>
+                            {% endif %}
+                            
+                            <a href="#" class="btn btn-sm btn-outline-danger">Annuler</a>
+                        {% elif rdv.statut == 'Terminé' %}
+                            <span class="badge bg-secondary">Terminé</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted">Aucun rendez-vous planifié.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

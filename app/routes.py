@@ -50,6 +50,9 @@ def dashboard():
         today = datetime.now().date()
         stats['rdv_today'] = RendezVous.query.filter_by(date_rdv=today).count()
         stats['waiting'] = RendezVous.query.filter_by(date_rdv=today, statut='En attente').count()
+    elif current_user.role == 'Caissier':
+        stats['pending_invoices'] = Facture.query.filter_by(statut='En attente').count()
+        stats['daily_revenue'] = db.session.query(db.func.sum(Facture.montant_paye)).filter(db.func.date(Facture.date_facture) == datetime.now().date()).scalar() or 0
 
     if current_user.role == 'Medecin':
         recent_rdvs = RendezVous.query.filter_by(medecin_id=current_user.medecin_id).order_by(RendezVous.date_rdv.desc()).limit(5).all()
@@ -379,6 +382,30 @@ def rapports():
                            rdv_labels=rdv_labels, rdv_data=rdv_data,
                            rev_labels=rev_labels, rev_data=rev_data,
                            gender_labels=gender_labels, gender_data=gender_data)
+
+# --- CAISSIER MGMT ---
+@main.route("/caisse/factures")
+@login_required
+def caisse_factures():
+    if current_user.role not in ['Caissier', 'Administrateur']: return redirect(url_for('main.dashboard'))
+    factures = Facture.query.order_by(Facture.date_facture.desc()).all()
+    return render_template('caisse/factures.html', factures=factures)
+
+@main.route("/caisse/payer/<int:facture_id>", methods=['POST'])
+@login_required
+def caisse_payer(facture_id):
+    if current_user.role not in ['Caissier', 'Administrateur']: return redirect(url_for('main.dashboard'))
+    f = Facture.query.get_or_404(facture_id)
+    montant = request.form.get('montant_paye', type=float)
+    if montant:
+        f.montant_paye = (f.montant_paye or 0) + montant
+        if f.montant_paye >= f.montant_total:
+            f.statut = 'Payée'
+        else:
+            f.statut = 'Partielle'
+        db.session.commit()
+        flash(f'Paiement de {montant} CFA enregistré.', 'success')
+    return redirect(url_for('main.caisse_factures'))
 
 # --- LOGOUT ---
 @main.route("/logout")

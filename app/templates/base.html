@@ -236,7 +236,7 @@
             </a>
             {% endif %}
 
-            {% if current_user.role != 'Pharmacien' %}
+            {% if current_user.role not in ['Pharmacien', 'Caissier'] %}
             <a href="{{ url_for('main.list_rdvs') }}" class="menu-item {{ 'active' if request.endpoint == 'main.list_rdvs' }}">
                 <i class="bi bi-calendar-event"></i>
                 <span class="menu-text">Rendez-vous</span>
@@ -254,6 +254,13 @@
             <a href="{{ url_for('main.pharmacie_inventaire') }}" class="menu-item {{ 'active' if request.endpoint == 'main.pharmacie_inventaire' }}">
                 <i class="bi bi-capsule"></i>
                 <span class="menu-text">Inventaire</span>
+            </a>
+            {% endif %}
+
+            {% if current_user.role in ['Caissier', 'Administrateur'] %}
+            <a href="{{ url_for('main.caisse_factures') }}" class="menu-item {{ 'active' if request.endpoint == 'main.caisse_factures' }}">
+                <i class="bi bi-cash-stack"></i>
+                <span class="menu-text">Caisse</span>
             </a>
             {% endif %}
 

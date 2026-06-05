@@ -26,6 +26,35 @@
     {% elif role == 'Receptionniste' %}
     <div class="col-md-6"><div class="card p-3 border-0 bg-white"><div class="d-flex align-items-center"><div class="rounded-3 p-3 bg-primary bg-opacity-10 text-primary"><i class="bi bi-calendar-check fs-3"></i></div><div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.rdv_today }}</h5><small class="text-muted">RDV Aujourd'hui</small></div></div></div></div>
     <div class="col-md-6"><div class="card p-3 border-0 bg-white"><div class="d-flex align-items-center"><div class="rounded-3 p-3 bg-warning bg-opacity-10 text-warning"><i class="bi bi-hourglass-split fs-3"></i></div><div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.waiting }}</h5><small class="text-muted">Patients en attente</small></div></div></div></div>
+    
+    <!-- CAISSIER STATS -->
+    {% elif role == 'Caissier' %}
+    <div class="col-md-6">
+        <div class="card p-3 border-0 bg-white h-100">
+            <div class="d-flex align-items-center">
+                <div class="rounded-3 p-3 bg-danger bg-opacity-10 text-danger">
+                    <i class="bi bi-file-earmark-dollar fs-3"></i>
+                </div>
+                <div class="ms-3">
+                    <h5 class="mb-0 fw-bold">{{ stats.pending_invoices }}</h5>
+                    <small class="text-muted">Factures en attente</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3 border-0 bg-white h-100">
+            <div class="d-flex align-items-center">
+                <div class="rounded-3 p-3 bg-success bg-opacity-10 text-success">
+                    <i class="bi bi-cash-coin fs-3"></i>
+                </div>
+                <div class="ms-3">
+                    <h5 class="mb-0 fw-bold">{{ stats.daily_revenue }}</h5>
+                    <small class="text-muted">Recette du jour (CFA)</small>
+                </div>
+            </div>
+        </div>
+    </div>
     {% endif %}
     </div>
 

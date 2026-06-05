@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion de la Caisse{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold">Journal des Factures</h3>
+</div>
+
+<div class="card border-0 shadow-sm p-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Date</th>
+                    <th>Patient</th>
+                    <th>Montant Total</th>
+                    <th>Déjà Payé</th>
+                    <th>Reste</th>
+                    <th>Statut</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in factures %}
+                {% set reste = f.montant_total - (f.montant_paye or 0) %}
+                <tr>
+                    <td>{{ f.date_facture.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>
+                        <div class="fw-bold">{{ f.consultation.rdv.patient.prenom }} {{ f.consultation.rdv.patient.nom }}</div>
+                        <small class="text-muted">Assurance: {{ f.consultation.rdv.patient.assurance.nom_assurance if f.consultation.rdv.patient.assurance else 'Néant' }}</small>
+                    </td>
+                    <td class="fw-bold text-primary">{{ f.montant_total }} CFA</td>
+                    <td class="text-success">{{ f.montant_paye or 0 }} CFA</td>
+                    <td class="fw-bold text-danger">{{ reste }} CFA</td>
+                    <td>
+                        <span class="badge {{ 'bg-success' if f.statut == 'Payée' else 'bg-warning text-dark' if f.statut == 'Partielle' else 'bg-danger' }}">
+                            {{ f.statut }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            {% if f.statut != 'Payée' %}
+                            <button type="button" class="btn btn-sm btn-senegal" data-bs-toggle="modal" data-bs-target="#payModal{{ f.id }}">
+                                <i class="bi bi-cash me-1"></i> Encaisser
+                            </button>
+                            {% endif %}
+                            <a href="{{ url_for('main.pdf_facture', facture_id=f.id) }}" target="_blank" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-file-pdf"></i> PDF
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">Aucune facture enregistrée.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modals outside table-responsive for better stability -->
+{% for f in factures %}
+{% if f.statut != 'Payée' %}
+{% set reste = f.montant_total - (f.montant_paye or 0) %}
+<div class="modal fade" id="payModal{{ f.id }}" tabindex="-1" aria-labelledby="payModalLabel{{ f.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <form action="{{ url_for('main.caisse_payer', facture_id=f.id) }}" method="POST">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title fw-bold" id="payModalLabel{{ f.id }}">Règlement Facture #{{ f.id }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="display-6 text-success mb-2">
+                            <i class="bi bi-person-check"></i>
+                        </div>
+                        <h6 class="fw-bold mb-1">{{ f.consultation.rdv.patient.prenom }} {{ f.consultation.rdv.patient.nom }}</h6>
+                        <span class="badge bg-light text-dark border">Dossier N° {{ f.consultation.rdv.patient.id }}</span>
+                    </div>
+                    
+                    <div class="alert alert-warning border-0 d-flex align-items-center">
+                        <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+                        <div>
+                            Reste à percevoir : <strong>{{ reste }} CFA</strong>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Montant versé (CFA)</label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-cash"></i></span>
+                            <input type="number" name="montant_paye" class="form-control border-start-0" value="{{ reste }}" min="1" max="{{ reste }}" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-senegal px-4">Valider l'encaissement</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+{% endblock %}

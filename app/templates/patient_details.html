@@ -12,9 +12,14 @@
             <h4 class="fw-bold">{{ patient.prenom }} {{ patient.nom }}</h4>
             <p class="text-muted">Dossier N° {{ patient.id }}</p>
             <div class="d-grid gap-2">
-                <a href="{{ url_for('main.pdf_dossier', patient_id=patient.id) }}" target="_blank" class="btn btn-senegal">
-                    <i class="bi bi-file-earmark-pdf me-2"></i> Télécharger Dossier
+                <a href="{{ url_for('main.voir_dossier', patient_id=patient.id) }}" class="btn btn-outline-senegal mb-2">
+                    <i class="bi bi-eye me-2"></i> Visualiser Dossier
                 </a>
+                {% if current_user.role != 'Receptionniste' %}
+                <a href="{{ url_for('main.pdf_dossier', patient_id=patient.id) }}" target="_blank" class="btn btn-senegal">
+                    <i class="bi bi-file-earmark-pdf me-2"></i> Télécharger PDF
+                </a>
+                {% endif %}
             </div>
             <hr>
             <div class="text-start">
@@ -35,9 +40,9 @@
                 </a>
                 {% endif %}
             </div>
-            <p class="mb-1"><strong>Groupe:</strong> <span class="badge bg-danger">{{ patient.dossier.groupe_sanguin or '?' }}</span></p>
-            <p class="mb-1"><strong>Allergies:</strong> {{ patient.dossier.allergies or 'Néant' }}</p>
-            <p class="mb-0"><strong>Antécédents:</strong> {{ patient.dossier.antecedents or 'Néant' }}</p>
+            <p class="mb-1"><strong>Groupe:</strong> <span class="badge bg-danger">{{ patient.dossier.groupe_sanguin if patient.dossier else '?' }}</span></p>
+            <p class="mb-1"><strong>Allergies:</strong> {{ patient.dossier.allergies if patient.dossier else 'Néant' }}</p>
+            <p class="mb-0"><strong>Antécédents:</strong> {{ patient.dossier.antecedents if patient.dossier else 'Néant' }}</p>
         </div>
     </div>
     

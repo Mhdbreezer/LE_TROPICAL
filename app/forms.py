@@ -9,7 +9,7 @@ class PatientForm(FlaskForm):
     sexe = SelectField('Sexe', choices=[('M', 'Masculin'), ('F', 'Féminin')], validators=[DataRequired()])
     adresse = StringField('Adresse')
     telephone = StringField('Téléphone', validators=[DataRequired()])
-    email = StringField('Email', validators=[Optional(), Email()])
+    email = StringField('Email', validators=[Optional()])
     assurance_id = SelectField('Assurance', coerce=int, validators=[Optional()])
     centre_id = SelectField('Centre de Santé', coerce=int, validators=[Optional()])
     allergies = TextAreaField('Allergies (Informations critiques)', validators=[Optional()])
@@ -18,7 +18,7 @@ class PatientForm(FlaskForm):
 
 class RDVForm(FlaskForm):
     patient_id = SelectField('Patient', coerce=int, validators=[DataRequired()])
-    centre_id = SelectField('Centre', coerce=int, validators=[DataRequired()])
+    centre_id = SelectField('Centre', coerce=int, validators=[Optional()])
     service_id = SelectField('Service ciblé', coerce=int, validators=[DataRequired()])
     medecin_id = SelectField('Médecin', coerce=int, validators=[DataRequired()])
     date_rdv = DateField('Date du RDV', validators=[DataRequired()])
@@ -46,6 +46,7 @@ class MedicamentForm(FlaskForm):
     forme = StringField('Forme (ex: Comprimé, Sirop)')
     dosage = StringField('Dosage (ex: 500mg)')
     seuil_alerte = IntegerField('Seuil d\'alerte stock', default=10)
+    quantite_a_ajouter = IntegerField('Quantité à ajouter', default=0)
     submit = SubmitField('Enregistrer')
 
 class ServiceForm(FlaskForm):
@@ -63,6 +64,22 @@ class MedecinForm(FlaskForm):
     username = StringField('Nom d\'utilisateur (Login)', validators=[DataRequired()])
     password = StringField('Mot de passe', validators=[DataRequired()])
     submit = SubmitField('Enregistrer le Médecin')
+
+class UrgenceForm(FlaskForm):
+    # Choix : Patient existant ou Nouveau ?
+    patient_id = SelectField('Patient existant (si déjà enregistré)', coerce=int, validators=[Optional()])
+    
+    # Informations pour nouveau patient
+    nom_nouveau = StringField('Nom (Nouveau Patient)', validators=[Optional()])
+    prenom_nouveau = StringField('Prénom (Nouveau Patient)', validators=[Optional()])
+    sexe_nouveau = SelectField('Sexe', choices=[('M', 'Masculin'), ('F', 'Féminin')], validators=[Optional()])
+    
+    # Médical
+    medecin_id = SelectField('Médecin de garde', coerce=int, validators=[DataRequired()])
+    service_id = SelectField('Service', coerce=int, validators=[DataRequired()])
+    
+    motif = TextAreaField('Motif de l\'urgence', validators=[DataRequired()])
+    submit = SubmitField('ADMISSION IMMÉDIATE (URGENCE VITALE)')
 
 class AssuranceForm(FlaskForm):
     nom_assurance = StringField('Nom de l\'Assurance', validators=[DataRequired()])

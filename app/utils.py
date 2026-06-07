@@ -10,6 +10,27 @@ class PDF(FPDF):
         self.rect(0, 0, 70, 5, 'F')
         self.set_fill_color(253, 239, 66) # Yellow
         self.rect(70, 0, 70, 5, 'F')
+        
+        # Star: Geometric drawing (polygon) to avoid Unicode issues
+        # Center approx (105, 2.5)
+        self.set_fill_color(0, 133, 63) # Star color (Green)
+        # Simplified star polygon points (relative to center 105, 2.5)
+        # Note: FPDF coordinates are absolute
+        cx, cy = 105, 2.5
+        star_points = [
+            [cx, cy - 2],    # Top
+            [cx + 0.5, cy - 0.5], 
+            [cx + 2, cy - 0.5],
+            [cx + 0.8, cy + 0.5],
+            [cx + 1.2, cy + 1.8],
+            [cx, cy + 1],
+            [cx - 1.2, cy + 1.8],
+            [cx - 0.8, cy + 0.5],
+            [cx - 2, cy - 0.5],
+            [cx - 0.5, cy - 0.5]
+        ]
+        self.polygon(star_points, style='F')
+        
         self.set_fill_color(227, 27, 35)  # Red
         self.rect(140, 0, 70, 5, 'F')
         
@@ -134,14 +155,16 @@ def generate_dossier_pdf(patient):
     pdf.cell(0, 10, ' ALERTES MEDICALES', new_x="LMARGIN", new_y="NEXT", fill=True)
     pdf.set_font('helvetica', '', 12)
     
-    allergies = "Néant"
-    antecedents = "Néant"
     if patient.dossier:
         allergies = patient.dossier.allergies or "Néant"
         antecedents = patient.dossier.antecedents or "Néant"
+    else:
+        allergies = "Néant"
+        antecedents = "Néant"
         
-    pdf.multi_cell(0, 10, f'Allergies: {allergies}')
-    pdf.multi_cell(0, 10, f'Antécédents: {antecedents}')
+    pdf.ln(2)
+    pdf.multi_cell(0, 10, f'Allergies: {allergies}', new_x="LMARGIN", new_y="NEXT")
+    pdf.multi_cell(0, 10, f'Antecedents: {antecedents}', new_x="LMARGIN", new_y="NEXT")
     pdf.ln(5)
 
     # History
@@ -155,9 +178,9 @@ def generate_dossier_pdf(patient):
             pdf.set_font('helvetica', 'B', 11)
             pdf.cell(0, 10, f'Date: {rdv.consultation.date_consultation.strftime("%d/%m/%Y")} - Dr {rdv.medecin.nom}', new_x="LMARGIN", new_y="NEXT")
             pdf.set_font('helvetica', 'I', 11)
-            pdf.multi_cell(0, 7, f'Diagnostic: {rdv.consultation.diagnostic}')
+            pdf.multi_cell(0, 7, f'Diagnostic: {rdv.consultation.diagnostic or "Aucun"}', new_x="LMARGIN", new_y="NEXT")
             pdf.set_font('helvetica', '', 10)
-            pdf.multi_cell(0, 7, f'Observations: {rdv.consultation.observations}')
+            pdf.multi_cell(0, 7, f'Observations: {rdv.consultation.observations or "Aucune"}', new_x="LMARGIN", new_y="NEXT")
             
             if rdv.consultation.ordonnance:
                 pdf.set_font('helvetica', 'B', 10)
@@ -174,3 +197,38 @@ def generate_dossier_pdf(patient):
     pdf.output(filepath)
     
     return send_file(filepath, as_attachment=True)
+
+def envoyer_notification(utilisateur_cible, message):
+    """
+    Enregistre une notification en base de données pour un utilisateur spécifique.
+    `utilisateur_cible` peut être un objet Utilisateur ou un patient/médecin possédant un compte.
+    """
+    from app.models import Notification, Utilisateur
+    from app import db
+    
+    user = None
+    if isinstance(utilisateur_cible, Utilisateur):
+        user = utilisateur_cible
+    elif hasattr(utilisateur_cible, 'user'):
+        u_attr = utilisateur_cible.user
+        if isinstance(u_attr, list) and len(u_attr) > 0:
+            user = u_attr[0]
+        else:
+            user = u_attr
+    
+    if not user:
+        # Recherche directe en base si c'est un Medecin ou Patient
+        from app.models import Medecin, Patient
+        if isinstance(utilisateur_cible, Medecin):
+            user = Utilisateur.query.filter_by(medecin_id=utilisateur_cible.id).first()
+        elif isinstance(utilisateur_cible, Patient):
+            user = Utilisateur.query.filter_by(patient_id=utilisateur_cible.id).first()
+    
+    if user:
+        new_notif = Notification(user_id=user.id, message=message)
+        db.session.add(new_notif)
+        db.session.commit()
+        print(f"NOTIFICATION PERSISTEE [User: {user.username}]: {message}")
+    else:
+        print(f"ALERTE: Impossible d'envoyer une notification à {utilisateur_cible} (compte utilisateur introuvable).")
+

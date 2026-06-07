@@ -15,11 +15,11 @@ class Utilisateur(db.Model, UserMixin):
     
     # Link to patient if role is patient
     patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=True)
-    patient = db.relationship('Patient', backref='user', uselist=False)
+    patient = db.relationship('Patient', backref=db.backref('user', uselist=False))
     
     # Link to medecin if role is medecin
     medecin_id = db.Column(db.Integer, db.ForeignKey('medecin.id'), nullable=True)
-    medecin = db.relationship('Medecin', backref='user', uselist=False)
+    medecin = db.relationship('Medecin', backref=db.backref('user', uselist=False))
 
 class Service(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -42,6 +42,7 @@ class Medecin(db.Model):
     teleconsult_active = db.Column(db.Boolean, default=False)
     service_id = db.Column(db.Integer, db.ForeignKey('service.id'), nullable=False)
     centre_id = db.Column(db.Integer, db.ForeignKey('centre.id'), nullable=True)
+    centre = db.relationship('Centre', backref='medecins')
     
     rdvs = db.relationship('RendezVous', backref='medecin', lazy=True)
     dispos = db.relationship('Disponibilite', backref='medecin', lazy=True)
@@ -116,6 +117,10 @@ class Medicament(db.Model):
     
     lots = db.relationship('LotMedicament', backref='medicament', lazy=True)
 
+    @property
+    def total_stock(self):
+        return sum(lot.qte_restante for lot in self.lots)
+
 class LigneOrdonnance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ordonnance_id = db.Column(db.Integer, db.ForeignKey('ordonnance.id'), nullable=False)
@@ -161,6 +166,15 @@ class LotMedicament(db.Model):
     qte_initiale = db.Column(db.Integer)
     qte_restante = db.Column(db.Integer)
     date_reception = db.Column(db.Date, default=datetime.utcnow)
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('utilisateur.id'), nullable=False)
+    message = db.Column(db.String(255), nullable=False)
+    date_notif = db.Column(db.DateTime, default=datetime.utcnow)
+    lu = db.Column(db.Boolean, default=False)
+    
+    user = db.relationship('Utilisateur', backref=db.backref('notifications', lazy=True))
 
 class Interaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -26,9 +26,15 @@
                             {{ form.dosage(class="form-control") }}
                         </div>
                     </div>
-                    <div class="mb-3">
-                        {{ form.seuil_alerte.label(class="form-label") }}
-                        {{ form.seuil_alerte(class="form-control", type="number") }}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.seuil_alerte.label(class="form-label") }}
+                            {{ form.seuil_alerte(class="form-control", type="number") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.quantite_a_ajouter.label(class="form-label") }}
+                            {{ form.quantite_a_ajouter(class="form-control", type="number") }}
+                        </div>
                     </div>
                     <div class="mt-4 d-grid">
                         {{ form.submit(class="btn btn-senegal") }}

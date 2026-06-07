@@ -1,36 +1,112 @@
 {% extends "base.html" %}
 
 {% block auth_content %}
+<style>
+    .auth-bg {
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="%23E0F2FE" fill-opacity="0.6" d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,213.3C672,224,768,192,864,165.3C960,139,1056,117,1152,112C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') bottom center / 100% 35vh no-repeat, var(--bg-light);
+        position: relative;
+    }
+    
+    .auth-card {
+        border-radius: 24px;
+        box-shadow: 0 25px 50px rgba(37, 99, 235, 0.25);
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.95);
+    }
+    
+    .auth-logo-box {
+        width: 80px;
+        height: 80px;
+        background: var(--button-gradient);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3);
+        transform: rotate(-5deg);
+        transition: transform 0.3s;
+    }
+    
+    .auth-logo-box:hover {
+        transform: rotate(0deg);
+    }
+    
+    .auth-logo-box i {
+        font-size: 2.5rem;
+        color: white;
+        transform: rotate(5deg);
+    }
+    
+    .auth-logo-box:hover i {
+        transform: rotate(0deg);
+    }
+
+    .custom-input {
+        background-color: #F8F9FA;
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding-left: 15px;
+        transition: all 0.3s;
+    }
+
+    .custom-input:focus {
+        background-color: #FFFFFF;
+        border-color: #38BDF8;
+        box-shadow: 0 0 0 0.25rem rgba(56, 189, 248, 0.2);
+    }
+
+    .form-floating > label {
+        padding-left: 15px;
+        color: var(--text-muted);
+    }
+    
+    .login-btn {
+        border-radius: 12px;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+    }
+    
+    .login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(56, 189, 248, 0.4) !important;
+    }
+</style>
+
 <div class="auth-bg">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-5">
-                <div class="card shadow-lg border-0 overflow-hidden">
-                    <div class="p-1" style="background: linear-gradient(to right, var(--sn-green), var(--sn-yellow), var(--sn-red));"></div>
+            <div class="col-md-5 col-lg-4">
+                <div class="card auth-card border-0 overflow-hidden">
                     <div class="card-body p-5 text-center">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Coat_of_arms_of_Senegal.svg/1200px-Coat_of_arms_of_Senegal.svg.png" 
-                             alt="Armoiries du Sénégal" style="height: 100px;" class="mb-4">
                         
-                        <h3 class="fw-bold mb-0" style="color: var(--sn-green);">SGRDMS</h3>
-                        <p class="text-muted text-uppercase small fw-bold mb-4">Ministère de la Santé - Le Tropical</p>
+                        <!-- Logo -->
+                        <div class="auth-logo-box mb-4">
+                            <i class="bi bi-hospital-fill"></i>
+                        </div>
                         
+                        <!-- Titles -->
+                        <h3 class="fw-bold mb-1" style="color: var(--text-dark);">Bienvenue</h3>
+                        <p class="text-muted small fw-bold mb-4">SGRDMS - LE TROPICAL</p>
+                        
+                        <!-- Form -->
                         <form method="POST" action="">
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="username" name="username" placeholder="Nom d'utilisateur" required>
-                                <label for="username">Nom d'utilisateur</label>
+                                <input type="text" class="form-control custom-input" id="username" name="username" placeholder="Nom d'utilisateur" required>
+                                <label for="username"><i class="bi bi-person me-2"></i>Nom d'utilisateur</label>
                             </div>
                             <div class="form-floating mb-4">
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Mot de passe" required>
-                                <label for="password">Mot de passe</label>
+                                <input type="password" class="form-control custom-input" id="password" name="password" placeholder="Mot de passe" required>
+                                <label for="password"><i class="bi bi-lock me-2"></i>Mot de passe</label>
                             </div>
                             
-                            <button type="submit" class="btn btn-senegal w-100 py-3 shadow">
+                            <button type="submit" class="btn btn-senegal w-100 py-3 shadow-sm login-btn">
                                 <i class="bi bi-box-arrow-in-right me-2"></i> Accéder au portail
                             </button>
                         </form>
                     </div>
-                    <div class="card-footer bg-white border-0 text-center pb-4">
-                        <small class="text-muted">Système de Gestion des Rendez-vous et Dossiers Médicaux</small>
+                    <div class="card-footer bg-transparent border-0 text-center pb-4 pt-0">
+                        <small class="text-muted">Système de Gestion des Rendez-vous<br>et Dossiers Médicaux</small>
                     </div>
                 </div>
             </div>

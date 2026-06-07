@@ -1,4 +1,4 @@
-#!/home/mhd/sgrdms/venv/bin/python3
+#!/home/mhd/SGRDMS/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

@@ -1,11 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}Planning des Rendez-vous{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Planning des Rendez-vous</h2>
-    <a href="{{ url_for('main.nouveau_rdv') }}" class="btn btn-senegal shadow-sm">+ Planifier un RDV</a>
+    <h2>{{ title }}</h2>
+    <div>
+        {% if is_historique %}
+            <a href="{{ url_for('main.list_rdvs') }}" class="btn btn-outline-senegal shadow-sm">Planning du jour</a>
+        {% else %}
+            <a href="{{ url_for('main.historique_rdvs') }}" class="btn btn-outline-secondary shadow-sm">Voir Historique</a>
+            <a href="{{ url_for('main.nouveau_rdv') }}" class="btn btn-senegal shadow-sm">+ Planifier un RDV</a>
+        {% endif %}
+    </div>
 </div>
 
 <div class="card shadow-sm border-0">
@@ -19,7 +26,9 @@
                     <th>Type</th>
                     <th>Priorité</th>
                     <th>Statut</th>
-                    <th>Actions</th>
+                    {% if not is_historique %}
+                        <th>Actions</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -42,26 +51,43 @@
                             <span class="badge bg-success">Normal</span>
                         {% endif %}
                     </td>
-                    <td>{{ rdv.statut }}</td>
                     <td>
-                        {% if rdv.statut == 'Programmé' %}
-                            {% if current_user.role == 'Medecin' or current_user.role == 'Administrateur' %}
-                                <a href="{{ url_for('main.nouvelle_consultation', rdv_id=rdv.id) }}" class="btn btn-sm btn-success">Consulter</a>
+                        <span class="badge {{ 'bg-success' if rdv.statut == 'Terminé' else 'bg-secondary' if rdv.statut == 'Annulé' else 'bg-warning' if rdv.statut == 'En attente validation' else 'bg-info' }}">
+                            {{ rdv.statut }}
+                        </span>
+                    </td>
+                    {% if not is_historique %}
+                    <td>
+                        {% if rdv.statut == 'En attente validation' and current_user.role == 'Medecin' %}
+                            <form action="{{ url_for('main.valider_rdv', rdv_id=rdv.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-success">Valider</button>
+                            </form>
+                            <form action="{{ url_for('main.refuser_rdv', rdv_id=rdv.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Refuser ce RDV ?')">Refuser</button>
+                            </form>
+                        {% elif rdv.statut in ['Programmé', 'En attente'] %}
+                            {% if current_user.role == 'Medecin' %}
+                                {% if rdv.type_rdv != 'Téléconsultation' %}
+                                    <a href="{{ url_for('main.nouvelle_consultation', rdv_id=rdv.id) }}" class="btn btn-sm btn-success">Consulter</a>
+                                {% else %}
+                                    <a href="https://meet.jit.si/SGRDMS-Tropical-{{ rdv.id }}" target="_blank" class="btn btn-sm btn-info text-white">Vidéo-consultation</a>
+                                {% endif %}
                             {% endif %}
                             
-                            {% if rdv.type_rdv == 'Téléconsultation' %}
-                                <a href="https://meet.jit.si/SGRDMS-Tropical-{{ rdv.id }}" target="_blank" class="btn btn-sm btn-info text-white">Vidéo-conférence</a>
+                            {% if current_user.role in ['Medecin', 'Administrateur'] %}
+                                <a href="{{ url_for('transfert.transfere_rdv', rdv_id=rdv.id) }}" class="btn btn-sm btn-outline-primary">Transférer</a>
                             {% endif %}
                             
-                            <a href="#" class="btn btn-sm btn-outline-danger">Annuler</a>
-                        {% elif rdv.statut == 'Terminé' %}
-                            <span class="badge bg-secondary">Terminé</span>
+                            <form action="{{ url_for('main.annuler_rdv', rdv_id=rdv.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Êtes-vous sûr ?')">Annuler</button>
+                            </form>
                         {% endif %}
                     </td>
+                    {% endif %}
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="7" class="text-center text-muted">Aucun rendez-vous planifié.</td>
+                    <td colspan="{{ 7 if not is_historique else 6 }}" class="text-center text-muted">Aucun rendez-vous trouvé.</td>
                 </tr>
                 {% endfor %}
             </tbody>

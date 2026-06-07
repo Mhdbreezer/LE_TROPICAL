@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Admission d'Urgence Vitale{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-lg overflow-hidden">
+            <div class="card-header bg-danger text-white py-3 text-center">
+                <h3 class="mb-0 fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> ADMISSION D'URGENCE VITALE</h3>
+                <small>Priorité Absolue - Prise en charge immédiate</small>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="alert alert-warning border-0">
+                        <h6 class="fw-bold mb-1">Type de patient :</h6>
+                        <p class="small mb-0">Choisissez un patient existant OU remplissez les champs "Nouveau Patient" ci-dessous.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.patient_id.label(class="form-label fw-bold") }}
+                        {{ form.patient_id(class="form-select border-danger") }}
+                    </div>
+
+                    <div id="nouveau-patient-fields" class="p-3 bg-light rounded-3 mb-4 border-start border-4 border-danger">
+                        <h6 class="fw-bold mb-3">Informations Nouveau Patient</h6>
+                        <div class="row">
+                            <div class="col-md-5">
+                                {{ form.nom_nouveau.label(class="form-label") }}
+                                {{ form.nom_nouveau(class="form-control", placeholder="Nom") }}
+                            </div>
+                            <div class="col-md-5">
+                                {{ form.prenom_nouveau.label(class="form-label") }}
+                                {{ form.prenom_nouveau(class="form-control", placeholder="Prénom") }}
+                            </div>
+                            <div class="col-md-2">
+                                {{ form.sexe_nouveau.label(class="form-label") }}
+                                {{ form.sexe_nouveau(class="form-select") }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            {{ form.service_id.label(class="form-label fw-bold") }}
+                            {{ form.service_id(class="form-select") }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.medecin_id.label(class="form-label fw-bold") }}
+                            {{ form.medecin_id(class="form-select") }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.motif.label(class="form-label fw-bold") }}
+                        {{ form.motif(class="form-control", rows="3", placeholder="Décrivez brièvement l'état du patient...") }}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger btn-lg fw-bold shadow">
+                            <i class="bi bi-lightning-charge-fill me-2"></i> VALIDER L'ADMISSION IMMÉDIATE
+                        </button>
+                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-light">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Dynamisme simple pour masquer/afficher
+    const patientSelect = document.querySelector('select[name="patient_id"]');
+    const newFields = document.getElementById('nouveau-patient-fields');
+    
+    patientSelect.addEventListener('change', function() {
+        if (this.value != "0") {
+            newFields.style.opacity = "0.5";
+            newFields.style.pointerEvents = "none";
+        } else {
+            newFields.style.opacity = "1";
+            newFields.style.pointerEvents = "auto";
+        }
+    });
+</script>
+{% endblock %}

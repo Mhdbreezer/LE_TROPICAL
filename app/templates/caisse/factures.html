@@ -12,6 +12,7 @@
         <table class="table table-hover align-middle">
             <thead class="table-light">
                 <tr>
+                    <th>N° Facture</th>
                     <th>Date</th>
                     <th>Patient</th>
                     <th>Montant Total</th>
@@ -25,6 +26,7 @@
                 {% for f in factures %}
                 {% set reste = f.montant_total - (f.montant_paye or 0) %}
                 <tr>
+                    <td><strong>#{{ f.id }}</strong></td>
                     <td>{{ f.date_facture.strftime('%d/%m/%Y %H:%M') }}</td>
                     <td>
                         <div class="fw-bold">{{ f.consultation.rdv.patient.prenom }} {{ f.consultation.rdv.patient.nom }}</div>
@@ -53,7 +55,7 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="7" class="text-center text-muted py-4">Aucune facture enregistrée.</td>
+                    <td colspan="8" class="text-center text-muted py-4">Aucune facture enregistrée.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -108,3 +110,4 @@
 {% endif %}
 {% endfor %}
 {% endblock %}
+

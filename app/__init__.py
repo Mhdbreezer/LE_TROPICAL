@@ -7,7 +7,7 @@ from config import Config
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
-login_manager.login_view = 'login'
+login_manager.login_view = 'main.login'
 login_manager.login_message_category = 'info'
 
 def create_app(config_class=Config):
@@ -20,6 +20,9 @@ def create_app(config_class=Config):
 
     from app.routes import main
     app.register_blueprint(main)
+    
+    from app.transfert import transfert_bp
+    app.register_blueprint(transfert_bp)
 
     @app.context_processor
     def inject_now():

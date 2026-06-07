@@ -19,8 +19,34 @@
     
     <!-- PHARMACIST STATS -->
     {% elif role == 'Pharmacien' %}
-    <div class="col-md-6"><div class="card p-3 border-0 bg-white"><div class="d-flex align-items-center"><div class="rounded-3 p-3 bg-primary bg-opacity-10 text-primary"><i class="bi bi-capsule fs-3"></i></div><div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.total_meds }}</h5><small class="text-muted">Médicaments</small></div></div></div></div>
-    <div class="col-md-6"><div class="card p-3 border-0 bg-white"><div class="d-flex align-items-center"><div class="rounded-3 p-3 bg-danger bg-opacity-10 text-danger"><i class="bi bi-exclamation-triangle-fill fs-3"></i></div><div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.low_stock }}</h5><small class="text-muted">Alertes Stock Bas</small></div></div></div></div>
+    <div class="col-md-6">
+        <a href="{{ url_for('main.pharmacie_inventaire') }}" class="text-decoration-none">
+            <div class="card p-3 border-0 bg-white h-100 shadow-sm hover-shadow">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-3 p-3 bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-capsule fs-3"></i>
+                    </div>
+                    <div class="ms-3">
+                        <h5 class="mb-0 fw-bold">{{ stats.total_meds }}</h5>
+                        <small class="text-muted">Types de médicaments</small>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3 border-0 bg-white h-100">
+            <div class="d-flex align-items-center">
+                <div class="rounded-3 p-3 bg-danger bg-opacity-10 text-danger">
+                    <i class="bi bi-exclamation-triangle-fill fs-3"></i>
+                </div>
+                <div class="ms-3">
+                    <h5 class="mb-0 fw-bold">{{ stats.low_stock }}</h5>
+                    <small class="text-muted">Alertes Stock Bas</small>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <!-- RECEPTION STATS -->
     {% elif role == 'Receptionniste' %}
@@ -29,29 +55,35 @@
     
     <!-- CAISSIER STATS -->
     {% elif role == 'Caissier' %}
-    <div class="col-md-6">
-        <div class="card p-3 border-0 bg-white h-100">
+    <div class="col-md-3">
+        <div class="card p-3 border-0 bg-white h-100 shadow-sm">
             <div class="d-flex align-items-center">
-                <div class="rounded-3 p-3 bg-danger bg-opacity-10 text-danger">
-                    <i class="bi bi-file-earmark-dollar fs-3"></i>
-                </div>
-                <div class="ms-3">
-                    <h5 class="mb-0 fw-bold">{{ stats.pending_invoices }}</h5>
-                    <small class="text-muted">Factures en attente</small>
-                </div>
+                <div class="rounded-3 p-3 bg-danger bg-opacity-10 text-danger"><i class="bi bi-file-earmark-dollar fs-3"></i></div>
+                <div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.pending_invoices }}</h5><small class="text-muted">À encaisser</small></div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card p-3 border-0 bg-white h-100">
+    <div class="col-md-3">
+        <div class="card p-3 border-0 bg-white h-100 shadow-sm">
             <div class="d-flex align-items-center">
-                <div class="rounded-3 p-3 bg-success bg-opacity-10 text-success">
-                    <i class="bi bi-cash-coin fs-3"></i>
-                </div>
-                <div class="ms-3">
-                    <h5 class="mb-0 fw-bold">{{ stats.daily_revenue }}</h5>
-                    <small class="text-muted">Recette du jour (CFA)</small>
-                </div>
+                <div class="rounded-3 p-3 bg-warning bg-opacity-10 text-warning"><i class="bi bi-clock-history fs-3"></i></div>
+                <div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.partial_invoices }}</h5><small class="text-muted">Paiements partiels</small></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 border-0 bg-white h-100 shadow-sm">
+            <div class="d-flex align-items-center">
+                <div class="rounded-3 p-3 bg-warning bg-opacity-10 text-warning"><i class="bi bi-exclamation-circle fs-3"></i></div>
+                <div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.overdue_invoices }}</h5><small class="text-muted">En souffrance (>48h)</small></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 border-0 bg-white h-100 shadow-sm">
+            <div class="d-flex align-items-center">
+                <div class="rounded-3 p-3 bg-success bg-opacity-10 text-success"><i class="bi bi-cash-coin fs-3"></i></div>
+                <div class="ms-3"><h5 class="mb-0 fw-bold">{{ stats.daily_revenue }}</h5><small class="text-muted">Recette du jour</small></div>
             </div>
         </div>
     </div>
@@ -59,50 +91,27 @@
     </div>
 
     <div class="row g-4">
-    <div class="col-md-8">
-        <div class="card border-0 bg-white p-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="fw-bold mb-0">Rendez-vous Récents</h5>
-                <a href="{{ url_for('main.list_rdvs') }}" class="btn btn-sm btn-outline-success">Voir tout</a>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Patient</th>
-                            <th>Heure</th>
-                            <th>Type</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for rdv in recent_rdvs %}
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="rounded-circle bg-light p-2 me-2">{{ rdv.patient.prenom[0] }}{{ rdv.patient.nom[0] }}</div>
-                                    {{ rdv.patient.prenom }} {{ rdv.patient.nom }}
-                                </div>
-                            </td>
-                            <td>{{ rdv.heure_rdv.strftime('%H:%M') }}</td>
-                            <td><span class="badge {{ 'bg-info' if rdv.type_rdv == 'Téléconsultation' else 'bg-secondary' }} bg-opacity-10 text-{{ 'info' if rdv.type_rdv == 'Téléconsultation' else 'dark' }}">{{ rdv.type_rdv }}</span></td>
-                            <td>
-                                <span class="badge {{ 'bg-success' if rdv.statut == 'Terminé' else 'bg-warning' }}">
-                                    {{ rdv.statut }}
-                                </span>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="4" class="text-center text-muted">Aucun rendez-vous récent.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+    {% if role != 'Caissier' %}
+    <!-- ... (reste de la section RDV) ... -->
+    {% else %}
+    <!-- CAISSIER ACTIONS RAPIDES -->
+    <div class="col-md-6">
+        <div class="card border-0 bg-white p-4 h-100">
+            <h5 class="fw-bold mb-4">Recherche Rapide Facture</h5>
+            <form action="{{ url_for('main.caisse_recherche') }}" method="GET" class="d-flex">
+                <input type="number" name="facture_id" class="form-control me-2" placeholder="N° de facture..." required>
+                <button type="submit" class="btn btn-senegal"><i class="bi bi-search"></i></button>
+            </form>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
+        <div class="card border-0 bg-white p-4 h-100">
+            <h5 class="fw-bold mb-4">Statistiques Assurance</h5>
+            <p>Total Facturé: <span class="fw-bold">{{ stats.total_billed }} CFA</span></p>
+            <p>Total Encaissé: <span class="fw-bold text-success">{{ stats.total_paid }} CFA</span></p>
+        </div>
+    </div>
+    {% endif %}
         {% if role == 'Patient' %}
         <div class="card border-0 bg-white p-4 h-100">
             <h5 class="fw-bold mb-4">Mes Documents</h5>
@@ -156,7 +165,7 @@
                     <a href="{{ url_for('main.nouveau_rdv') }}" class="btn btn-light text-start p-3 border-0 shadow-sm">
                         <i class="bi bi-calendar-plus-fill text-primary me-2"></i> Planifier RDV
                     </a>
-                    <a href="{{ url_for('main.nouveau_rdv') }}?statut=Urgence" class="btn btn-danger text-start p-3 border-0 shadow-sm">
+                    <a href="{{ url_for('main.admission_urgence') }}" class="btn btn-danger text-start p-3 border-0 shadow-sm">
                         <i class="bi bi-lightning-fill text-white me-2"></i> Triage / Urgence
                     </a>
                     {% elif role == 'Patient' %}

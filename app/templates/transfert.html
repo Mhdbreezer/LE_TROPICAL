@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Transfert de Patient{% endblock %}
+{% block content %}
+<div class="card shadow-sm border-0 p-4">
+    <h3 class="fw-bold mb-4">Transférer le patient : {{ rdv.patient.prenom }} {{ rdv.patient.nom }}</h3>
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label">Nouveau Service</label>
+            <select name="service_id" class="form-select" required>
+                {% for s in services %}
+                <option value="{{ s.id }}">{{ s.nom_service }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Nouveau Médecin</label>
+            <select name="medecin_id" class="form-select" required>
+                {% for m in medecins %}
+                <option value="{{ m.id }}">Dr {{ m.prenom }} {{ m.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-senegal">Confirmer le transfert</button>
+        <a href="{{ url_for('main.list_rdvs') }}" class="btn btn-outline-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

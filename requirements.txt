@@ -6,3 +6,5 @@ WTForms
 email-validator
 flask-bcrypt
 fpdf2
+psycopg2-binary
+python-dotenv

@@ -6,7 +6,37 @@ from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime, timedelta
 from app.utils import generate_facture_pdf, generate_ordonnance_pdf, generate_dossier_pdf, envoyer_notification
 
-main = Blueprint('main', __name__)
+@main.route("/admin/db-init")
+def db_init_route():
+    # Protection par clé secrète dans l'URL pour éviter que n'importe qui réinitialise la base
+    secret = request.args.get('secret')
+    if secret != 'senegal2026':
+        return "Accès refusé. Clé secrète incorrecte.", 403
+    
+    try:
+        db.create_all()
+        # On vérifie si l'admin existe déjà pour ne pas créer de doublons
+        if not Utilisateur.query.filter_by(username='admin').first():
+            from init_db import init_db
+            # On adapte l'appel de init_db pour qu'il ne recrée pas l'app
+            with db.session.no_autoflush:
+                # On réutilise la logique de init_db.py
+                admin_pass = bcrypt.generate_password_hash('admin123').decode('utf-8')
+                admin = Utilisateur(username='admin', password=admin_pass, role='Administrateur')
+                db.session.add(admin)
+                
+                # Ajout minimal pour que le site soit fonctionnel
+                s1 = Service(nom_service='Généraliste', description='Médecine générale')
+                c1 = Centre(nom_centre='Centre Principal', adresse='Dakar', telephone='338000000')
+                db.session.add_all([s1, c1])
+                
+                db.session.commit()
+            return "Base de données initialisée avec succès ! Vous pouvez vous connecter avec admin/admin123."
+        else:
+            return "La base de données est déjà initialisée."
+    except Exception as e:
+        db.session.rollback()
+        return f"Erreur lors de l'initialisation : {str(e)}"
 
 @main.route("/", methods=['GET', 'POST'])
 @main.route("/login", methods=['GET', 'POST'])

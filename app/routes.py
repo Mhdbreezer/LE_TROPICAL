@@ -113,24 +113,34 @@ def nouveau_patient():
     form.assurance_id.choices = [(0, 'Aucune')] + [(a.id, a.nom_assurance) for a in Assurance.query.all()]
     form.centre_id.choices = [(0, 'Choisir un centre')] + [(c.id, c.nom_centre) for c in Centre.query.all()]
     if form.validate_on_submit():
+        # Vérification proactive du nom d'utilisateur
+        existing_user = Utilisateur.query.filter_by(username=form.username.data).first()
+        if existing_user:
+            flash(f"Le nom d'utilisateur '{form.username.data}' est déjà utilisé. Veuillez en choisir un autre.", 'danger')
+            return render_template('patient_form.html', form=form, title='Nouveau Patient')
+
         assur_id = form.assurance_id.data if form.assurance_id.data != 0 else None
         ctr_id = form.centre_id.data if form.centre_id.data != 0 else None
         try:
+            # Création du patient
             patient = Patient(nom=form.nom.data, prenom=form.prenom.data, date_naissance=form.date_naissance.data, sexe=form.sexe.data, adresse=form.adresse.data, telephone=form.telephone.data, email=form.email.data, assurance_id=assur_id, centre_id=ctr_id)
             db.session.add(patient)
-            db.session.commit()
+            db.session.flush() # Génère l'ID du patient sans valider la transaction
             
+            # Création du compte utilisateur
             hashed_pass = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
             new_user = Utilisateur(username=form.username.data, password=hashed_pass, role='Patient', patient_id=patient.id)
             db.session.add(new_user)
             
+            # Création du dossier médical
             db.session.add(DossierMedical(patient_id=patient.id, allergies=form.allergies.data, antecedents=form.antecedents.data))
-            db.session.commit()
-            flash('Patient et compte utilisateur créés.', 'success')
+            
+            db.session.commit() # Valide tout en une seule fois
+            flash('Patient et compte utilisateur créés avec succès.', 'success')
             return redirect(url_for('main.list_patients'))
-        except Exception:
+        except Exception as e:
             db.session.rollback()
-            flash('Erreur lors de la création (le nom d\'utilisateur existe peut-être déjà).', 'danger')
+            flash(f"Erreur lors de l'enregistrement : {str(e)}", 'danger')
     return render_template('patient_form.html', form=form, title='Nouveau Patient')
 
 @main.route("/patient/dossier/modifier/<int:patient_id>", methods=['GET', 'POST'])
@@ -316,6 +326,12 @@ def nouveau_utilisateur():
     if current_user.role != 'Administrateur': return redirect(url_for('main.dashboard'))
     form = UtilisateurForm()
     if form.validate_on_submit():
+        # Vérification proactive
+        existing_user = Utilisateur.query.filter_by(username=form.username.data).first()
+        if existing_user:
+            flash(f"Le nom d'utilisateur '{form.username.data}' est déjà pris.", 'danger')
+            return render_template('admin/utilisateur_form.html', form=form, title='Nouvel Utilisateur')
+
         hashed_pass = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         user = Utilisateur(username=form.username.data, password=hashed_pass, role=form.role.data)
         db.session.add(user)
@@ -323,9 +339,9 @@ def nouveau_utilisateur():
             db.session.commit()
             flash('Nouvel utilisateur créé.', 'success')
             return redirect(url_for('main.list_utilisateurs'))
-        except Exception:
+        except Exception as e:
             db.session.rollback()
-            flash('Erreur : le nom d\'utilisateur est probablement déjà pris.', 'danger')
+            flash(f"Erreur : {str(e)}", 'danger')
     return render_template('admin/utilisateur_form.html', form=form, title='Nouvel Utilisateur')
 
 @main.route("/consultation/nouvelle/<int:rdv_id>", methods=['GET', 'POST'])

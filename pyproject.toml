@@ -9,10 +9,11 @@ dependencies = [
   "flask-login",
   "Flask-WTF",
   "WTForms",
-  " email-validator",
+  "email-validator",
   "flask-bcrypt",
-  "fpdf2"
-
+  "fpdf2",
+  "psycopg2-binary",
+  "python-dotenv"
 ]
 
 [tool.vercel]

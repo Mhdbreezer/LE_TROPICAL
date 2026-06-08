@@ -10,11 +10,24 @@ class PatientForm(FlaskForm):
     adresse = StringField('Adresse')
     telephone = StringField('Téléphone', validators=[DataRequired()])
     email = StringField('Email', validators=[Optional()])
+    username = StringField('Nom d\'utilisateur', validators=[DataRequired()])
+    password = StringField('Mot de passe', validators=[DataRequired()])
     assurance_id = SelectField('Assurance', coerce=int, validators=[Optional()])
     centre_id = SelectField('Centre de Santé', coerce=int, validators=[Optional()])
     allergies = TextAreaField('Allergies (Informations critiques)', validators=[Optional()])
     antecedents = TextAreaField('Antécédents majeurs', validators=[Optional()])
     submit = SubmitField('Enregistrer le Patient')
+
+class UtilisateurForm(FlaskForm):
+    username = StringField('Nom d\'utilisateur', validators=[DataRequired()])
+    password = StringField('Mot de passe', validators=[DataRequired()])
+    role = SelectField('Rôle', choices=[
+        ('Administrateur', 'Administrateur'),
+        ('Pharmacien', 'Pharmacien'),
+        ('Receptionniste', 'Réceptionniste'),
+        ('Caissier', 'Caissier')
+    ], validators=[DataRequired()])
+    submit = SubmitField('Créer l\'utilisateur')
 
 class RDVForm(FlaskForm):
     patient_id = SelectField('Patient', coerce=int, validators=[DataRequired()])

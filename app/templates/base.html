@@ -310,6 +310,10 @@
                 <i class="bi bi-graph-up"></i>
                 <span class="menu-text">Rapports</span>
             </a>
+            <a href="{{ url_for('main.list_utilisateurs') }}" class="menu-item {{ 'active' if request.endpoint == 'main.list_utilisateurs' }}">
+                <i class="bi bi-person-gear"></i>
+                <span class="menu-text">Utilisateurs</span>
+            </a>
             {% endif %}
 
             {% if current_user.role in ['Administrateur', 'Receptionniste'] %}

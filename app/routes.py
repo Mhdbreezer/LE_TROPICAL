@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, url_for, flash, redirect, request
 from app import db, bcrypt
 from app.models import Utilisateur, Patient, Medecin, RendezVous, DossierMedical, Consultation, Ordonnance, LigneOrdonnance, Medicament, Facture, Interaction, Service, Centre, Assurance, LotMedicament, Notification
-from app.forms import PatientForm, RDVForm, ConsultationForm, OrdonnanceLineForm, MedicamentForm, ServiceForm, MedecinForm, AssuranceForm, UrgenceForm
+from app.forms import PatientForm, RDVForm, ConsultationForm, OrdonnanceLineForm, MedicamentForm, ServiceForm, MedecinForm, AssuranceForm, UrgenceForm, UtilisateurForm
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime, timedelta
 from app.utils import generate_facture_pdf, generate_ordonnance_pdf, generate_dossier_pdf, envoyer_notification
@@ -119,13 +119,18 @@ def nouveau_patient():
             patient = Patient(nom=form.nom.data, prenom=form.prenom.data, date_naissance=form.date_naissance.data, sexe=form.sexe.data, adresse=form.adresse.data, telephone=form.telephone.data, email=form.email.data, assurance_id=assur_id, centre_id=ctr_id)
             db.session.add(patient)
             db.session.commit()
+            
+            hashed_pass = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            new_user = Utilisateur(username=form.username.data, password=hashed_pass, role='Patient', patient_id=patient.id)
+            db.session.add(new_user)
+            
             db.session.add(DossierMedical(patient_id=patient.id, allergies=form.allergies.data, antecedents=form.antecedents.data))
             db.session.commit()
-            flash('Patient créé.', 'success')
+            flash('Patient et compte utilisateur créés.', 'success')
             return redirect(url_for('main.list_patients'))
         except Exception:
             db.session.rollback()
-            flash('Erreur.', 'danger')
+            flash('Erreur lors de la création (le nom d\'utilisateur existe peut-être déjà).', 'danger')
     return render_template('patient_form.html', form=form, title='Nouveau Patient')
 
 @main.route("/patient/dossier/modifier/<int:patient_id>", methods=['GET', 'POST'])
@@ -297,6 +302,31 @@ def rapports():
     rev_stats = db.session.query(db.func.strftime('%Y-%m', Facture.date_facture), db.func.sum(Facture.montant_total)).group_by(db.func.strftime('%Y-%m', Facture.date_facture)).limit(6).all()
     gender_stats = db.session.query(Patient.sexe, db.func.count(Patient.id)).group_by(Patient.sexe).all()
     return render_template('admin/rapports.html', rdv_labels=[s[0] for s in rdv_stats], rdv_data=[s[1] for s in rdv_stats], rev_labels=[s[0] for s in rev_stats], rev_data=[s[1] for s in rev_stats], gender_labels=[('M' if s[0]=='M' else 'F') for s in gender_stats], gender_data=[s[1] for s in gender_stats])
+
+@main.route("/admin/utilisateurs")
+@login_required
+def list_utilisateurs():
+    if current_user.role != 'Administrateur': return redirect(url_for('main.dashboard'))
+    users = Utilisateur.query.all()
+    return render_template('admin/utilisateurs.html', users=users)
+
+@main.route("/admin/utilisateur/nouveau", methods=['GET', 'POST'])
+@login_required
+def nouveau_utilisateur():
+    if current_user.role != 'Administrateur': return redirect(url_for('main.dashboard'))
+    form = UtilisateurForm()
+    if form.validate_on_submit():
+        hashed_pass = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = Utilisateur(username=form.username.data, password=hashed_pass, role=form.role.data)
+        db.session.add(user)
+        try:
+            db.session.commit()
+            flash('Nouvel utilisateur créé.', 'success')
+            return redirect(url_for('main.list_utilisateurs'))
+        except Exception:
+            db.session.rollback()
+            flash('Erreur : le nom d\'utilisateur est probablement déjà pris.', 'danger')
+    return render_template('admin/utilisateur_form.html', form=form, title='Nouvel Utilisateur')
 
 @main.route("/consultation/nouvelle/<int:rdv_id>", methods=['GET', 'POST'])
 @login_required

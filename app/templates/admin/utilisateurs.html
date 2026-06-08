@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between mb-4">
+    <h2>Gestion des Utilisateurs</h2>
+    <a href="{{ url_for('main.nouveau_utilisateur') }}" class="btn btn-senegal">+ Nouvel Utilisateur</a>
+</div>
+<div class="card border-0 shadow-sm"><div class="card-body">
+    <table class="table">
+        <thead><tr><th>Nom d'utilisateur</th><th>Rôle</th><th>Date Création</th></tr></thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td>{{ u.username }}</td>
+                <td><span class="badge bg-info">{{ u.role }}</span></td>
+                <td>{{ u.date_creation.strftime('%d/%m/%Y %H:%M') if u.date_creation else 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div></div>
+{% endblock %}

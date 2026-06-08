@@ -6,6 +6,8 @@ from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime, timedelta
 from app.utils import generate_facture_pdf, generate_ordonnance_pdf, generate_dossier_pdf, envoyer_notification
 
+main = Blueprint('main', __name__)
+
 @main.route("/admin/db-init")
 def db_init_route():
     secret = request.args.get('secret')

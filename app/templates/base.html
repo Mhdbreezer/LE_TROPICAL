@@ -55,14 +55,15 @@
         /* ======== SIDEBAR ======== */
         #sidebar {
             width: var(--sidebar-width);
-            height: 100vh;
+            height: calc(100vh - 30px);
             position: fixed;
-            left: 0; top: 0;
+            left: 15px; top: 15px;
+            border-radius: 24px;
             z-index: 1000;
             background: rgba(255, 255, 255, 0.18);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
-            border-right: 1px solid rgba(255,255,255,0.35);
+            border: 1px solid rgba(255,255,255,0.35);
             box-shadow: var(--glass-shadow);
             display: flex;
             flex-direction: column;
@@ -139,14 +140,14 @@
 
         /* ======== WRAPPER ======== */
         #main-wrapper {
-            margin-left: var(--sidebar-width);
+            margin-left: calc(var(--sidebar-width) + 30px);
             transition: all 0.3s ease;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        #main-wrapper.expanded { margin-left: var(--sidebar-collapsed-width); }
+        #main-wrapper.expanded { margin-left: calc(var(--sidebar-collapsed-width) + 30px); }
 
         /* ======== TOP NAVBAR ======== */
         .top-navbar {

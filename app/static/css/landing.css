@@ -45,9 +45,11 @@ body {
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
     transition: all 0.3s ease;
-    margin: 10px auto !important;
-    width: 98% !important;
-    max-width: 1400px;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    width: auto !important;
+    max-width: none !important;
     border-radius: 18px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }

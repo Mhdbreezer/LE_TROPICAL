@@ -1,10 +1,21 @@
 {% extends "base.html" %}
 
 {% block auth_content %}
+<style>
+    @keyframes floatInCard {
+        0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .auth-card-animated {
+        animation: floatInCard 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        border-radius: 32px !important;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4) !important;
+    }
+</style>
 <div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
     <div class="row justify-content-center w-100">
-        <div class="col-md-5 col-lg-4">
-            <div class="card auth-card border-0 overflow-hidden position-relative p-2">
+        <div class="col-md-8 col-lg-6 col-xl-5">
+            <div class="card auth-card auth-card-animated border-0 overflow-hidden position-relative p-3">
                 <!-- Bouton Retour -->
                 <a href="{{ url_for('main.index') }}" class="btn btn-sm btn-secondary position-absolute top-0 start-0 m-3 rounded-circle shadow-sm" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Retour à l'accueil">
                     <i class="bi bi-arrow-left"></i>

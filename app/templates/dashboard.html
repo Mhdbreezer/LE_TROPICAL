@@ -146,33 +146,74 @@
             </div>
         </div>
         {% else %}
-        <div class="card border-0 bg-white p-4 h-100">
-            <h5 class="fw-bold mb-4">Actions Rapides</h5>
+        <div class="card border-0 p-4 h-100">
+            <h5 class="fw-bold mb-4">⚡ Actions Rapides</h5>
             <div class="d-grid gap-3">
                 {% if role == 'Pharmacien' %}
-                <a href="{{ url_for('main.nouveau_medicament') }}" class="btn btn-light text-start p-3 border-0 shadow-sm">
-                    <i class="bi bi-capsule-pill text-warning me-2"></i> Ajouter Médicament
+                <a href="{{ url_for('main.nouveau_medicament') }}" class="quick-action-btn qa-orange">
+                    <span class="qa-icon"><i class="bi bi-capsule-pill"></i></span>
+                    <span>Ajouter un Médicament</span>
                 </a>
+                <a href="{{ url_for('main.pharmacie_ordonnances') }}" class="quick-action-btn qa-blue">
+                    <span class="qa-icon"><i class="bi bi-file-medical"></i></span>
+                    <span>Voir les Ordonnances</span>
+                </a>
+
                 {% elif role == 'Medecin' %}
-                <a href="{{ url_for('main.list_rdvs') }}" class="btn btn-light text-start p-3 border-0 shadow-sm">
-                    <i class="bi bi-calendar-check text-success me-2"></i> Mes RDV du jour
+                <a href="{{ url_for('main.list_rdvs') }}" class="quick-action-btn qa-green">
+                    <span class="qa-icon"><i class="bi bi-calendar-check"></i></span>
+                    <span>Mes RDV du jour</span>
                 </a>
-                {% else %}
-                    {% if role == 'Receptionniste' %}
-                    <a href="{{ url_for('main.nouveau_patient') }}" class="btn btn-light text-start p-3 border-0 shadow-sm">
-                        <i class="bi bi-person-plus-fill text-success me-2"></i> Nouveau Patient
-                    </a>
-                    <a href="{{ url_for('main.nouveau_rdv') }}" class="btn btn-light text-start p-3 border-0 shadow-sm">
-                        <i class="bi bi-calendar-plus-fill text-primary me-2"></i> Planifier RDV
-                    </a>
-                    <a href="{{ url_for('main.admission_urgence') }}" class="btn btn-danger text-start p-3 border-0 shadow-sm">
-                        <i class="bi bi-lightning-fill text-white me-2"></i> Triage / Urgence
-                    </a>
-                    {% elif role == 'Patient' %}
-                    <a href="{{ url_for('main.nouveau_rdv') }}" class="btn btn-light text-start p-3 border-0 shadow-sm">
-                        <i class="bi bi-calendar-plus-fill text-primary me-2"></i> Planifier mon RDV
-                    </a>
-                    {% endif %}
+                <a href="{{ url_for('main.list_patients') }}" class="quick-action-btn qa-blue">
+                    <span class="qa-icon"><i class="bi bi-person-lines-fill"></i></span>
+                    <span>Mes Patients</span>
+                </a>
+                <a href="{{ url_for('main.historique_rdvs') }}" class="quick-action-btn qa-purple">
+                    <span class="qa-icon"><i class="bi bi-clock-history"></i></span>
+                    <span>Voir l'historique</span>
+                </a>
+
+                {% elif role == 'Receptionniste' %}
+                <a href="{{ url_for('main.nouveau_patient') }}" class="quick-action-btn qa-green">
+                    <span class="qa-icon"><i class="bi bi-person-plus-fill"></i></span>
+                    <span>Nouveau Patient</span>
+                </a>
+                <a href="{{ url_for('main.nouveau_rdv') }}" class="quick-action-btn qa-blue">
+                    <span class="qa-icon"><i class="bi bi-calendar-plus-fill"></i></span>
+                    <span>Planifier un RDV</span>
+                </a>
+                <a href="{{ url_for('main.file_attente') }}" class="quick-action-btn qa-orange">
+                    <span class="qa-icon"><i class="bi bi-hourglass-split"></i></span>
+                    <span>File d'attente</span>
+                </a>
+                <a href="{{ url_for('main.admission_urgence') }}" class="quick-action-btn qa-danger">
+                    <span class="qa-icon" style="background:rgba(248,113,113,0.25);color:#f87171 !important;"><i class="bi bi-lightning-fill"></i></span>
+                    <span>Triage / Urgence Vitale</span>
+                </a>
+
+                {% elif role == 'Patient' %}
+                <a href="{{ url_for('main.nouveau_rdv') }}" class="quick-action-btn qa-blue">
+                    <span class="qa-icon"><i class="bi bi-calendar-plus-fill"></i></span>
+                    <span>Prendre un Rendez-vous</span>
+                </a>
+                <a href="{{ url_for('main.historique_rdvs') }}" class="quick-action-btn qa-purple">
+                    <span class="qa-icon"><i class="bi bi-clock-history"></i></span>
+                    <span>Voir mes RDV passés</span>
+                </a>
+
+                {% elif role == 'Administrateur' %}
+                <a href="{{ url_for('main.list_medecins') }}" class="quick-action-btn qa-blue">
+                    <span class="qa-icon"><i class="bi bi-person-badge"></i></span>
+                    <span>Gérer les Médecins</span>
+                </a>
+                <a href="{{ url_for('main.list_patients') }}" class="quick-action-btn qa-green">
+                    <span class="qa-icon"><i class="bi bi-people-fill"></i></span>
+                    <span>Gérer les Patients</span>
+                </a>
+                <a href="{{ url_for('main.rapports') }}" class="quick-action-btn qa-orange">
+                    <span class="qa-icon"><i class="bi bi-bar-chart-fill"></i></span>
+                    <span>Rapports & Stats</span>
+                </a>
                 {% endif %}
             </div>
         </div>

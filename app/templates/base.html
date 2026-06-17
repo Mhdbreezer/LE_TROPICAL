@@ -289,9 +289,108 @@
             border: none;
         }
 
-        .btn-secondary, .btn-warning, .btn-info {
+        /* btn-light : fond blanc → Liquid Glass lisible */
+        .btn-light {
+            background: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            color: #ffffff !important;
+            font-weight: 500;
+            transition: all 0.25s ease;
+        }
+
+        .btn-light:hover {
+            background: rgba(255, 255, 255, 0.28) !important;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+            color: #ffffff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        /* btn-secondary (ex: Voir historique) → outline lumineux */
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.35) !important;
+            color: rgba(255, 255, 255, 0.92) !important;
+            font-weight: 500;
+            transition: all 0.25s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.22) !important;
+            border-color: rgba(255, 255, 255, 0.6) !important;
+            color: #ffffff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%) !important;
+            color: #1a1a1a !important;
+            border: none !important;
+            font-weight: 600;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%) !important;
+            color: #ffffff !important;
+            border: none !important;
+            font-weight: 600;
+        }
+
+        .btn-warning:hover, .btn-info:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* ======== ACTIONS RAPIDES — Dashboard ======== */
+        .quick-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 14px;
+            color: #ffffff !important;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .quick-action-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             color: #ffffff !important;
         }
+
+        .quick-action-btn .qa-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .quick-action-btn.qa-green  .qa-icon { background: rgba(52, 211, 153, 0.2); color: #34d399 !important; }
+        .quick-action-btn.qa-blue   .qa-icon { background: rgba(56, 189, 248, 0.2); color: #38bdf8 !important; }
+        .quick-action-btn.qa-orange .qa-icon { background: rgba(251, 191, 36, 0.2); color: #fbbf24 !important; }
+        .quick-action-btn.qa-red    .qa-icon { background: rgba(248, 113, 113, 0.2); color: #f87171 !important; }
+        .quick-action-btn.qa-purple .qa-icon { background: rgba(167, 139, 250, 0.2); color: #a78bfa !important; }
+        .quick-action-btn.qa-danger { background: rgba(220, 38, 38, 0.25); border-color: rgba(248,113,113,0.4); }
+        .quick-action-btn.qa-danger:hover { background: rgba(220, 38, 38, 0.4); }
 
         /* ======== FORMULAIRES — Liquid Glass ======== */
         .form-control, .form-select {
@@ -343,11 +442,17 @@
         .form-label { color: #ffffff !important; font-weight: 500; }
 
         /* ======== BADGES & ICONS ======== */
-        .card .bg-opacity-10,
-        .card [class*="bg-opacity-10"] {
-            background-color: rgba(255,255,255,0.1) !important;
-            color: #38BDF8 !important;
-        }
+        /* On laisse les couleurs Bootstrap d'icônes fonctionner */
+        .card .bg-primary.bg-opacity-10   { background: rgba(37, 99, 235, 0.25) !important; }
+        .card .bg-success.bg-opacity-10   { background: rgba(52, 211, 153, 0.22) !important; }
+        .card .bg-warning.bg-opacity-10   { background: rgba(251, 191, 36, 0.22) !important; }
+        .card .bg-danger.bg-opacity-10    { background: rgba(248, 113, 113, 0.22) !important; }
+        .card .bg-info.bg-opacity-10      { background: rgba(56, 189, 248, 0.22) !important; }
+        .card .text-primary  { color: #60a5fa !important; }
+        .card .text-success  { color: #34d399 !important; }
+        .card .text-warning  { color: #fbbf24 !important; }
+        .card .text-danger   { color: #f87171 !important; }
+        .card .text-info     { color: #38bdf8 !important; }
 
         .bg-white {
             background: rgba(255,255,255,0.07) !important;

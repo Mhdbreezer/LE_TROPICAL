@@ -19,8 +19,10 @@ def migrate_columns():
         with db.engine.connect() as conn:
             conn.execute(text("ALTER TABLE rendez_vous ALTER COLUMN statut TYPE VARCHAR(50)"))
             conn.execute(text("ALTER TABLE rendez_vous ALTER COLUMN type_rdv TYPE VARCHAR(30)"))
+            conn.execute(text("ALTER TABLE facture ALTER COLUMN statut TYPE VARCHAR(30)"))
+            conn.execute(text("ALTER TABLE file_attente ALTER COLUMN statut TYPE VARCHAR(30)"))
             conn.commit()
-        return "✅ Migration réussie ! Colonnes statut (VARCHAR 50) et type_rdv (VARCHAR 30) corrigées."
+        return "✅ Migration réussie ! Toutes les colonnes VARCHAR corrigées."
     except Exception as e:
         return f"❌ Erreur migration : {str(e)}"
 
@@ -394,11 +396,20 @@ def list_assurances():
 @login_required
 def nouvelle_assurance():
     if current_user.role != 'Administrateur': return redirect(url_for('main.dashboard'))
-    form = AssuranceForm, UrgenceForm()
+    form = AssuranceForm()
     if form.validate_on_submit():
-        db.session.add(Assurance(nom_assurance=form.nom_assurance.data, taux_pec=form.taux_pec.data, plafond_annuel=form.plafond_annuel.data))
-        db.session.commit()
-        return redirect(url_for('main.list_assurances'))
+        try:
+            db.session.add(Assurance(
+                nom_assurance=form.nom_assurance.data,
+                taux_pec=form.taux_pec.data,
+                plafond_annuel=form.plafond_annuel.data
+            ))
+            db.session.commit()
+            flash('Assurance ajoutée avec succès.', 'success')
+            return redirect(url_for('main.list_assurances'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Erreur lors de l'enregistrement : {str(e)}", 'danger')
     return render_template('admin/assurance_form.html', form=form, title='Nouvelle Assurance')
 
 @main.route("/admin/rapports")

@@ -98,7 +98,7 @@
     </section>
 
     <!-- SECTION SERVICES -->
-    <section id="services" class="section-padding position-relative z-index-2 bg-white">
+    <section id="services" class="section-padding position-relative z-index-2 bg-white reveal">
         <div class="container">
             <div class="text-center mb-5 section-title-anim">
                 <h2 class="fw-bolder display-5 text-dark">Nos Services & <span class="text-primary-gradient">Avantages</span></h2>
@@ -150,7 +150,7 @@
     </section>
 
     <!-- SECTION DEPARTEMENTS -->
-    <section id="departements" class="section-padding position-relative z-index-2" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-top: 1px solid rgba(255, 255, 255, 0.2); border-bottom: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
+    <section id="departements" class="section-padding position-relative z-index-2 reveal" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-top: 1px solid rgba(255, 255, 255, 0.2); border-bottom: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
         <div class="container">
             <div class="text-center mb-5 section-title-anim">
                 <h2 class="fw-bolder display-5 text-white">Nos <span class="text-primary-gradient">Départements</span></h2>
@@ -195,7 +195,7 @@
     </section>
 
     <!-- SECTION CONTACT -->
-    <section id="contact" class="section-padding position-relative z-index-2 text-center bg-white">
+    <section id="contact" class="section-padding position-relative z-index-2 text-center bg-white reveal">
         <div class="container">
             <div class="p-5 mx-auto rounded-5 shadow-lg" style="max-width: 800px; background: rgba(255, 255, 255, 0.9);">
                 <h2 class="fw-bolder display-6 mb-4 text-dark">Prêt à nous rencontrer ?</h2>
@@ -208,7 +208,7 @@
     </section>
 
     <!-- FOOTER COMPLET ET MODERNE -->
-    <footer class="bg-dark text-white pt-5 pb-3 border-top border-secondary position-relative z-index-2">
+    <footer class="bg-dark text-white pt-5 pb-3 border-top border-secondary position-relative z-index-2 reveal">
         <div class="container">
             <div class="row mb-4">
                 <div class="col-lg-4 mb-4 mb-lg-0">
@@ -277,5 +277,28 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const reveals = document.querySelectorAll('.reveal');
+            
+            const revealOptions = {
+                threshold: 0.15,
+                rootMargin: "0px 0px -50px 0px"
+            };
+            
+            const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, revealOptions);
+            
+            reveals.forEach(reveal => {
+                revealOnScroll.observe(reveal);
+            });
+        });
+    </script>
 </body>
 </html>

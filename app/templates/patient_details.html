@@ -55,7 +55,7 @@
                     <div class="position-absolute start-0 translate-middle-x bg-success rounded-circle" style="width: 12px; height: 12px; margin-left: -2px; margin-top: 6px;"></div>
                     <div class="d-flex justify-content-between">
                         <h6 class="fw-bold">{{ rdv.consultation.date_consultation.strftime('%d/%m/%Y') }}</h6>
-                        <span class="badge bg-light text-dark">Dr {{ rdv.medecin.nom }}</span>
+                        <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8 !important; border: 1px solid rgba(56,189,248,0.3);">Dr {{ rdv.medecin.nom }}</span>
                     </div>
                     <p class="mb-1"><strong>Diagnostic:</strong> {{ rdv.consultation.diagnostic }}</p>
                     <p class="small text-muted">{{ rdv.consultation.observations }}</p>

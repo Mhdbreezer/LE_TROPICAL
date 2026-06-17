@@ -12,9 +12,9 @@
                 <form method="POST">
                     {{ form.hidden_tag() }}
                     
-                    <div class="alert alert-warning border-0">
-                        <h6 class="fw-bold mb-1">Type de patient :</h6>
-                        <p class="small mb-0">Choisissez un patient existant OU remplissez les champs "Nouveau Patient" ci-dessous.</p>
+                    <div class="alert alert-warning border-0" style="background: rgba(251, 191, 36, 0.2); border: 1px solid rgba(251,191,36,0.4) !important;">
+                        <h6 class="fw-bold mb-1" style="color: #fbbf24 !important;">Type de patient :</h6>
+                        <p class="small mb-0" style="color: rgba(255,255,255,0.9) !important;">Choisissez un patient existant OU remplissez les champs "Nouveau Patient" ci-dessous.</p>
                     </div>
 
                     <div class="mb-4">
@@ -22,7 +22,7 @@
                         {{ form.patient_id(class="form-select border-danger") }}
                     </div>
 
-                    <div id="nouveau-patient-fields" class="p-3 bg-light rounded-3 mb-4 border-start border-4 border-danger">
+                    <div id="nouveau-patient-fields" class="p-3 rounded-3 mb-4 border-start border-4 border-danger" style="background: rgba(255,255,255,0.05); box-shadow: inset 0 0 10px rgba(0,0,0,0.1);">
                         <h6 class="fw-bold mb-3">Informations Nouveau Patient</h6>
                         <div class="row">
                             <div class="col-md-5">

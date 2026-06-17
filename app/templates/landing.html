@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Tropicale - Centre Médical</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+    <style>
+        html { scroll-behavior: smooth; }
+        /* Taille des sections ajustée pour être plus compacte */
+        .section-padding { padding: 75px 0; }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#navbarNav" data-bs-offset="100" tabindex="0">
+
+    <!-- Fond global de la page avec l'image du médecin noir (Sénégal) -->
+    <div class="page-bg"></div>
+
+    <!-- Navbar lumineuse et floutée -->
+    <nav class="navbar navbar-expand-lg navbar-dark glass-nav py-3 fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center fw-bolder text-white" href="#accueil">
+                <i class="bi bi-plus-square-fill text-primary fs-3 me-2 nav-icon-anim"></i>
+                LE TROPICALE
+            </a>
+            <button class="navbar-toggler border-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav gap-3">
+                    <li class="nav-item"><a class="nav-link text-white fw-medium nav-hover" href="#accueil">Accueil</a></li>
+                    <li class="nav-item"><a class="nav-link text-white fw-medium nav-hover" href="#services">Nos Services</a></li>
+                    <li class="nav-item"><a class="nav-link text-white fw-medium nav-hover" href="#departements">Départements</a></li>
+                    <li class="nav-item"><a class="nav-link text-white fw-medium nav-hover" href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="d-none d-lg-flex align-items-center">
+                <a href="{{ url_for('main.login') }}" class="btn btn-outline-light rounded-pill me-3 fw-semibold px-4 btn-anim">Se connecter</a>
+                <a href="{{ url_for('main.login') }}" class="btn btn-primary rounded-pill fw-semibold px-4 shadow-sm btn-glow">Espace Patient</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SECTION ACCUEIL (Hero) -->
+    <section id="accueil" class="hero-section min-vh-100 d-flex flex-column justify-content-center position-relative">
+        <div class="container position-relative z-index-1 mt-5">
+            <div class="row">
+                <!-- Texte aligné À GAUCHE -->
+                <div class="col-lg-8 hero-text-col text-start">
+                    <h1 class="main-title text-white fw-bolder mb-4 text-shadow-heavy">
+                        LE TROPICAL : <br>
+                        <span class="text-primary-gradient">L'Innovation au Service de votre Santé.</span>
+                    </h1>
+                    <p class="subtitle text-light mb-5 fs-5 text-shadow-medium">
+                        Un système complet, simple et sécurisé pour une prise en charge médicale sans papier. Gérez vos rendez-vous, accédez à votre historique médical et profitez de la téléconsultation en un clic.
+                    </p>
+                    
+                    <!-- 3 Petites cartes séparées alignées à gauche (Liquid Glass) -->
+                    <div class="d-flex flex-wrap gap-3 fade-up-delay">
+                        
+                        <div class="liquid-glass-card d-flex align-items-center p-3 rounded-4">
+                            <div class="stat-icon-wrap bg-primary text-white me-3 flex-shrink-0">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <div class="d-flex flex-column text-start">
+                                <span class="stat-number fw-bolder text-white lh-1">{{ stats.total_patients }}</span>
+                                <span class="stat-label text-light small fw-medium">Nos Patients</span>
+                            </div>
+                        </div>
+
+                        <div class="liquid-glass-card d-flex align-items-center p-3 rounded-4">
+                            <div class="stat-icon-wrap bg-info text-white me-3 flex-shrink-0">
+                                <i class="bi bi-person-badge"></i>
+                            </div>
+                            <div class="d-flex flex-column text-start">
+                                <span class="stat-number fw-bolder text-white lh-1">{{ stats.total_medecins }}</span>
+                                <span class="stat-label text-light small fw-medium">Médecins Actifs</span>
+                            </div>
+                        </div>
+
+                        <div class="liquid-glass-card d-flex align-items-center p-3 rounded-4">
+                            <div class="stat-icon-wrap bg-success text-white me-3 flex-shrink-0">
+                                <i class="bi bi-hospital"></i>
+                            </div>
+                            <div class="d-flex flex-column text-start">
+                                <span class="stat-number fw-bolder text-white lh-1">{{ stats.total_services }}</span>
+                                <span class="stat-label text-light small fw-medium">Services</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION SERVICES -->
+    <section id="services" class="section-padding position-relative z-index-2 bg-white">
+        <div class="container">
+            <div class="text-center mb-5 section-title-anim">
+                <h2 class="fw-bolder display-5 text-dark">Nos Services & <span class="text-primary-gradient">Avantages</span></h2>
+                <p class="text-muted fs-5">L'excellence médicale portée par le digital.</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card service-card border-0 rounded-4 h-100 p-4 text-center">
+                        <div class="service-icon-wrapper bg-primary-soft mb-4 mx-auto pulse-hover flex-shrink-0">
+                            <i class="bi bi-folder-check text-primary fs-2"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Suivi Médical Digitalisé</h5>
+                        <p class="text-muted small mb-0">Fini les dossiers papier perdus. Accédez à l'historique complet des consultations et ordonnances en temps réel.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="card service-card border-0 rounded-4 h-100 p-4 text-center">
+                        <div class="service-icon-wrapper bg-info-soft mb-4 mx-auto pulse-hover flex-shrink-0">
+                            <i class="bi bi-calendar-check text-info fs-2"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Gestion Intelligente</h5>
+                        <p class="text-muted small mb-0">Planifiez vos visites selon les disponibilités réelles de nos spécialistes (Pédiatrie, Gynécologie, Médecine Générale).</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="card service-card border-0 rounded-4 h-100 p-4 text-center">
+                        <div class="service-icon-wrapper bg-success-soft mb-4 mx-auto pulse-hover flex-shrink-0">
+                            <i class="bi bi-camera-video text-success fs-2"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Téléconsultation</h5>
+                        <p class="text-muted small mb-0">Une session vidéo sécurisée pour consulter votre médecin où que vous soyez.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="card service-card border-0 rounded-4 h-100 p-4 text-center">
+                        <div class="service-icon-wrapper bg-warning-soft mb-4 mx-auto pulse-hover flex-shrink-0" style="background-color: rgba(245, 158, 11, 0.1);">
+                            <i class="bi bi-receipt text-warning fs-2" style="color: #f59e0b !important;"></i>
+                        </div>
+                        <h5 class="fw-bold mb-3">Pharmacie & Facturation</h5>
+                        <p class="text-muted small mb-0">Une traçabilité totale, de la prescription à la délivrance des médicaments, avec une facturation instantanée.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION DEPARTEMENTS -->
+    <section id="departements" class="section-padding position-relative z-index-2" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-top: 1px solid rgba(255, 255, 255, 0.2); border-bottom: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
+        <div class="container">
+            <div class="text-center mb-5 section-title-anim">
+                <h2 class="fw-bolder display-5 text-white">Nos <span class="text-primary-gradient">Départements</span></h2>
+                <p class="text-light fs-5">Une organisation pensée pour faciliter votre parcours de soin.</p>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0 float-anim">
+                    <div class="position-relative dept-img-container rounded-4 shadow-lg overflow-hidden">
+                        <!-- Image département -->
+                        <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1000&auto=format&fit=crop" alt="Départements" class="img-fluid dept-img w-100">
+                        <div class="glass-badge position-absolute bottom-0 start-0 m-4 p-3 rounded-4">
+                            <h5 class="fw-bold text-primary mb-0">Technologie Moderne</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 px-lg-5 slide-in-right-anim">
+                    <div class="d-flex mb-5 dept-item align-items-center">
+                        <!-- flex-shrink-0 évite la déformation -->
+                        <div class="dept-icon-wrapper bg-white shadow-sm me-4 flex-shrink-0"><i class="bi bi-shield-check text-primary fs-3"></i></div>
+                        <div>
+                            <h4 class="fw-bold text-white mb-1">Laboratoire d'analyses</h4>
+                            <p class="text-light fs-6 mb-0">Des résultats rapides et fiables pour vous guider au mieux.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex mb-5 dept-item align-items-center">
+                        <div class="dept-icon-wrapper bg-white shadow-sm me-4 flex-shrink-0"><i class="bi bi-bandaid text-primary fs-3"></i></div>
+                        <div>
+                            <h4 class="fw-bold text-white mb-1">Chirurgie Ambulatoire</h4>
+                            <p class="text-light fs-6 mb-0">Opérations avec un retour à domicile le jour même.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex dept-item align-items-center">
+                        <div class="dept-icon-wrapper bg-white shadow-sm me-4 flex-shrink-0"><i class="bi bi-file-medical text-primary fs-3"></i></div>
+                        <div>
+                            <h4 class="fw-bold text-white mb-1">Pharmacie intégrée</h4>
+                            <p class="text-light fs-6 mb-0">Accès direct aux médicaments prescrits après votre consultation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION CONTACT -->
+    <section id="contact" class="section-padding position-relative z-index-2 text-center bg-white">
+        <div class="container">
+            <div class="p-5 mx-auto rounded-5 shadow-lg" style="max-width: 800px; background: rgba(255, 255, 255, 0.9);">
+                <h2 class="fw-bolder display-6 mb-4 text-dark">Prêt à nous rencontrer ?</h2>
+                <p class="text-muted fs-5 mb-5">Connectez-vous à votre espace pour gérer vos rendez-vous, consulter vos dossiers et interagir avec nos spécialistes.</p>
+                <a href="{{ url_for('main.login') }}" class="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg btn-glow">
+                    Se connecter / Créer un compte
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER COMPLET ET MODERNE -->
+    <footer class="bg-dark text-white pt-5 pb-3 border-top border-secondary position-relative z-index-2">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h4 class="fw-bolder mb-3 text-white d-flex align-items-center">
+                        <i class="bi bi-plus-square-fill text-primary me-2"></i> LE TROPICALE
+                    </h4>
+                    <p class="text-secondary small">
+                        L'innovation et l'excellence au service de votre santé. Notre centre médical vous offre des soins de qualité avec un suivi 100% digitalisé et des spécialistes dévoués.
+                    </p>
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="#" class="text-white bg-primary bg-opacity-25 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; transition: 0.3s;" onmouseover="this.classList.add('bg-opacity-100')" onmouseout="this.classList.remove('bg-opacity-100')"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-white bg-primary bg-opacity-25 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; transition: 0.3s;" onmouseover="this.classList.add('bg-opacity-100')" onmouseout="this.classList.remove('bg-opacity-100')"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="text-white bg-primary bg-opacity-25 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; transition: 0.3s;" onmouseover="this.classList.add('bg-opacity-100')" onmouseout="this.classList.remove('bg-opacity-100')"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-white bg-primary bg-opacity-25 rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; transition: 0.3s;" onmouseover="this.classList.add('bg-opacity-100')" onmouseout="this.classList.remove('bg-opacity-100')"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                    <h6 class="text-uppercase fw-bold mb-3 text-white-50">Liens Rapides</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><a href="#accueil" class="text-secondary text-decoration-none nav-hover">Accueil</a></li>
+                        <li class="mb-2"><a href="#services" class="text-secondary text-decoration-none nav-hover">Nos Services</a></li>
+                        <li class="mb-2"><a href="#departements" class="text-secondary text-decoration-none nav-hover">Départements</a></li>
+                        <li class="mb-2"><a href="#contact" class="text-secondary text-decoration-none nav-hover">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                    <h6 class="text-uppercase fw-bold mb-3 text-white-50">Horaires</h6>
+                    <ul class="list-unstyled mb-0 text-secondary small">
+                        <li class="mb-2 d-flex justify-content-between border-bottom border-secondary pb-1">
+                            <span>Lundi - Vendredi :</span> <span>08h00 - 20h00</span>
+                        </li>
+                        <li class="mb-2 d-flex justify-content-between border-bottom border-secondary pb-1">
+                            <span>Samedi :</span> <span>09h00 - 18h00</span>
+                        </li>
+                        <li class="mb-2 d-flex justify-content-between pb-1">
+                            <span>Urgences :</span> <span class="text-danger fw-bold">24h/24 & 7j/7</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-12">
+                    <h6 class="text-uppercase fw-bold mb-3 text-white-50">Contact</h6>
+                    <ul class="list-unstyled mb-0 text-secondary small">
+                        <li class="mb-3 d-flex align-items-start">
+                            <i class="bi bi-geo-alt-fill text-primary me-2 mt-1"></i>
+                            <span>123 Avenue de la Santé, Dakar, Sénégal</span>
+                        </li>
+                        <li class="mb-3 d-flex align-items-center">
+                            <i class="bi bi-telephone-fill text-primary me-2"></i>
+                            <span>+221 33 800 00 00</span>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <i class="bi bi-envelope-fill text-primary me-2"></i>
+                            <span>contact@letropicale.sn</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="text-center pt-4 mt-4 border-top border-secondary text-secondary small">
+                <p class="mb-0 fw-medium">© 2026 Le Tropicale. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+:root {
+    --primary-gradient: linear-gradient(135deg, #38BDF8 0%, #2563EB 100%);
+    --primary-color: #38BDF8;
+    --primary-dark: #2563EB;
+    --text-dark: #1E293B;
+    --text-muted: #64748B;
+    --bg-light: #F0F8FF;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-dark);
+    background-color: var(--bg-light);
+    overflow-x: hidden;
+}
+
+/* ==========================================
+   FOND GLOBAL (Liquid Glass Ultra Transparent)
+========================================== */
+.page-bg {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-image: 
+        /* Overlay extrêmement transparent (0.3 à 0.1) pour Liquid Glass */
+        linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.1) 100%),
+        /* Image générée sur mesure avec aspect ratio 16:9 */
+        url('../img/medecin_hero.jpg');
+    background-size: cover;
+    background-position: top center;
+    background-attachment: fixed;
+    z-index: 0;
+}
+
+.z-index-1 { z-index: 1; }
+.z-index-2 { z-index: 2; }
+
+/* ==========================================
+   NAVBAR (Liquid Glass)
+========================================== */
+.glass-nav {
+    background: rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.nav-hover {
+    position: relative;
+    transition: color 0.3s ease;
+}
+.nav-hover::after {
+    content: ''; position: absolute; width: 0; height: 2px;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    background: var(--primary-color);
+    transition: width 0.3s ease;
+}
+.nav-hover:hover::after { width: 100%; }
+
+/* ==========================================
+   HERO SECTION 
+========================================== */
+.hero-section {
+    padding-top: 80px;
+}
+
+.hero-text-col {
+    animation: slideInLeft 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.main-title {
+    font-size: 4.5rem;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+}
+
+.subtitle {
+    max-width: 700px;
+}
+
+.text-shadow-heavy {
+    text-shadow: 0 4px 15px rgba(0,0,0,0.8);
+}
+.text-shadow-medium {
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+.text-primary-gradient {
+    background: var(--primary-color);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+/* ==========================================
+   LIQUID GLASS CARDS (Séparées)
+========================================== */
+.liquid-glass-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    min-width: 200px;
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.liquid-glass-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.stat-icon-wrap {
+    width: 45px; height: 45px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    flex-shrink: 0; /* Évite la déformation */
+}
+
+.stat-number { font-size: 1.8rem; letter-spacing: -1px; }
+
+/* ==========================================
+   SECTION SERVICES
+========================================== */
+.service-card {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid #e2e8f0 !important;
+}
+
+.service-card:hover {
+    transform: translateY(-15px) scale(1.03);
+    box-shadow: 0 25px 50px rgba(56, 189, 248, 0.15);
+    z-index: 10;
+}
+
+.service-icon-wrapper {
+    width: 70px; height: 70px;
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.4s ease;
+    flex-shrink: 0;
+}
+
+.service-card:hover .service-icon-wrapper {
+    transform: scale(1.1) rotate(10deg);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* ==========================================
+   SECTION DEPARTEMENTS
+========================================== */
+.dept-img-container {
+    overflow: hidden;
+}
+
+.dept-img { 
+    transition: transform 0.5s ease, filter 0.5s ease; 
+}
+.dept-img-container:hover .dept-img { 
+    transform: scale(1.08); 
+    filter: brightness(1.05);
+}
+
+.glass-badge {
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.6);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    animation: floatAnim 4s ease-in-out infinite;
+    z-index: 2; /* Garde le badge au dessus pendant le zoom */
+}
+
+.dept-icon-wrapper {
+    width: 60px; height: 60px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.3s ease;
+    flex-shrink: 0; /* Répare la déformation des icônes */
+}
+
+.dept-item:hover .dept-icon-wrapper {
+    transform: scale(1.1) rotate(-5deg);
+    background: var(--primary-gradient) !important;
+}
+.dept-item:hover .dept-icon-wrapper i { color: white !important; }
+
+/* ==========================================
+   UTILITAIRES
+========================================== */
+.bg-primary-soft { background-color: rgba(37, 99, 235, 0.1); }
+.bg-info-soft { background-color: rgba(56, 189, 248, 0.15); }
+.bg-success-soft { background-color: rgba(16, 185, 129, 0.1); }
+
+.btn-glow {
+    position: relative; overflow: hidden;
+    transition: all 0.3s ease;
+}
+.btn-glow:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4) !important;
+}
+.btn-glow::after {
+    content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg); transition: all 0.5s ease;
+}
+.btn-glow:hover::after { left: 200%; transition: all 0.8s ease; }
+
+@keyframes slideInLeft {
+    0% { opacity: 0; transform: translateX(-50px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+.fade-up-delay {
+    opacity: 0; animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 0.5s;
+}
+
+@keyframes fadeUp {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes floatAnim {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+@media (max-width: 991px) {
+    .main-title { font-size: 3rem; }
+    .hero-text-col { text-align: center !important; }
+    .d-flex.flex-wrap.gap-3 { justify-content: center; }
+    .liquid-glass-card { min-width: 150px; }
+}

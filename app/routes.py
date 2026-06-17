@@ -40,7 +40,19 @@ def db_init_route():
         db.session.rollback()
         return f"Erreur fatale : {str(e)}"
 
-@main.route("/", methods=['GET', 'POST'])
+@main.route("/")
+def index():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+    
+    # Statistiques en temps réel
+    stats = {
+        'total_patients': Patient.query.count(),
+        'total_medecins': Medecin.query.count(),
+        'total_services': Service.query.count()
+    }
+    return render_template('landing.html', stats=stats)
+
 @main.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:

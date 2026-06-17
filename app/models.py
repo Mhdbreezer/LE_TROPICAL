@@ -77,8 +77,8 @@ class RendezVous(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date_rdv = db.Column(db.Date, nullable=False)
     heure_rdv = db.Column(db.Time, nullable=False)
-    statut = db.Column(db.String(20), default='Programmé') # Programmé, Annulé, Terminé, Urgence
-    type_rdv = db.Column(db.String(20), default='Présentiel') # Présentiel, Téléconsultation
+    statut = db.Column(db.String(50), default='Programmé') # Programmé, Annulé, Terminé, Urgence, En attente validation
+    type_rdv = db.Column(db.String(30), default='Présentiel') # Présentiel, Téléconsultation
     priorite = db.Column(db.Integer, default=1)
     degre_urgence = db.Column(db.String(20), default='Normal') # Normal, Moyen, Critique (Triage)
     

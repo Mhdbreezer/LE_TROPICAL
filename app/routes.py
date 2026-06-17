@@ -8,6 +8,22 @@ from app.utils import generate_facture_pdf, generate_ordonnance_pdf, generate_do
 
 main = Blueprint('main', __name__)
 
+@main.route("/admin/migrate-columns")
+def migrate_columns():
+    """Route de migration pour corriger les colonnes VARCHAR trop courtes sur PostgreSQL."""
+    secret = request.args.get('secret')
+    if secret != 'senegal2026':
+        return "Accès refusé.", 403
+    try:
+        from sqlalchemy import text
+        with db.engine.connect() as conn:
+            conn.execute(text("ALTER TABLE rendez_vous ALTER COLUMN statut TYPE VARCHAR(50)"))
+            conn.execute(text("ALTER TABLE rendez_vous ALTER COLUMN type_rdv TYPE VARCHAR(30)"))
+            conn.commit()
+        return "✅ Migration réussie ! Colonnes statut (VARCHAR 50) et type_rdv (VARCHAR 30) corrigées."
+    except Exception as e:
+        return f"❌ Erreur migration : {str(e)}"
+
 @main.route("/admin/db-init")
 def db_init_route():
     secret = request.args.get('secret')

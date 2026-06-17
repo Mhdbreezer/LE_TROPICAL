@@ -254,28 +254,65 @@ def refuser_rdv(rdv_id):
 def nouveau_rdv():
     if current_user.role not in ['Administrateur', 'Receptionniste', 'Patient']: return redirect(url_for('main.dashboard'))
     form = RDVForm()
-    form.patient_id.choices = [(p.id, f"{p.prenom} {p.nom}") for p in Patient.query.all()]
+    
+    # Pour un patient, on limite les choix à lui-même
+    if current_user.role == 'Patient':
+        patient = Patient.query.get(current_user.patient_id)
+        if not patient:
+            flash("Profil patient introuvable.", "danger")
+            return redirect(url_for('main.dashboard'))
+        form.patient_id.choices = [(patient.id, f"{patient.prenom} {patient.nom}")]
+    else:
+        form.patient_id.choices = [(p.id, f"{p.prenom} {p.nom}") for p in Patient.query.all()]
+    
     form.centre_id.choices = [(0, 'Aucun')] + [(c.id, c.nom_centre) for c in Centre.query.all()]
     form.service_id.choices = [(s.id, s.nom_service) for s in Service.query.all()]
     form.medecin_id.choices = [(m.id, f"Dr {m.prenom} {m.nom}") for m in Medecin.query.all()]
+    
     if form.validate_on_submit():
-        today = datetime.now().date()
-        existing = RendezVous.query.filter(RendezVous.patient_id == form.patient_id.data, RendezVous.date_rdv == today, RendezVous.statut.notin_(['Terminé', 'Annulé'])).first()
-        rdv_statut = 'Urgence' if request.args.get('statut') == 'Urgence' else ('En attente validation' if current_user.role == 'Patient' else 'Programmé')
-        ctr_id = form.centre_id.data if form.centre_id.data != 0 else None
-        if existing:
-            existing.medecin_id, existing.service_id, existing.centre_id, existing.heure_rdv, existing.statut = form.medecin_id.data, form.service_id.data, ctr_id, form.heure_rdv.data, rdv_statut
-            target_med = Medecin.query.get(form.medecin_id.data)
-            envoyer_notification(target_med, f"Mise à jour du RDV de {existing.patient.prenom} {existing.patient.nom}")
-        else:
-            new_rdv_obj = RendezVous(patient_id=form.patient_id.data, medecin_id=form.medecin_id.data, service_id=form.service_id.data, centre_id=ctr_id, date_rdv=form.date_rdv.data, heure_rdv=form.heure_rdv.data, type_rdv=form.type_rdv.data, priorite=form.priorite.data, degre_urgence=form.degre_urgence.data, statut=rdv_statut)
-            db.session.add(new_rdv_obj)
-            db.session.commit()
-            target_med = Medecin.query.get(form.medecin_id.data)
-            patient_obj = Patient.query.get(form.patient_id.data)
-            envoyer_notification(target_med, f"Nouveau RDV assigné : {patient_obj.prenom} {patient_obj.nom}")
-        db.session.commit()
-        return redirect(url_for('main.list_rdvs'))
+        try:
+            # Pour un patient, on force son propre ID (sécurité)
+            patient_id = current_user.patient_id if current_user.role == 'Patient' else form.patient_id.data
+            today = datetime.now().date()
+            existing = RendezVous.query.filter(
+                RendezVous.patient_id == patient_id,
+                RendezVous.date_rdv == form.date_rdv.data,
+                RendezVous.statut.notin_(['Terminé', 'Annulé'])
+            ).first()
+            rdv_statut = 'Urgence' if request.args.get('statut') == 'Urgence' else ('En attente validation' if current_user.role == 'Patient' else 'Programmé')
+            ctr_id = form.centre_id.data if form.centre_id.data != 0 else None
+            if existing:
+                existing.medecin_id = form.medecin_id.data
+                existing.service_id = form.service_id.data
+                existing.centre_id = ctr_id
+                existing.heure_rdv = form.heure_rdv.data
+                existing.statut = rdv_statut
+                db.session.commit()
+                target_med = Medecin.query.get(form.medecin_id.data)
+                envoyer_notification(target_med, f"Mise à jour du RDV de {existing.patient.prenom} {existing.patient.nom}")
+            else:
+                new_rdv_obj = RendezVous(
+                    patient_id=patient_id,
+                    medecin_id=form.medecin_id.data,
+                    service_id=form.service_id.data,
+                    centre_id=ctr_id,
+                    date_rdv=form.date_rdv.data,
+                    heure_rdv=form.heure_rdv.data,
+                    type_rdv=form.type_rdv.data,
+                    priorite=form.priorite.data,
+                    degre_urgence=form.degre_urgence.data,
+                    statut=rdv_statut
+                )
+                db.session.add(new_rdv_obj)
+                db.session.commit()
+                target_med = Medecin.query.get(form.medecin_id.data)
+                patient_obj = Patient.query.get(patient_id)
+                envoyer_notification(target_med, f"Nouveau RDV assigné : {patient_obj.prenom} {patient_obj.nom}")
+            flash('Rendez-vous enregistré avec succès.', 'success')
+            return redirect(url_for('main.list_rdvs'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Erreur lors de l'enregistrement du RDV : {str(e)}", 'danger')
     return render_template('rdv_form.html', form=form, title='Nouveau RDV')
 
 @main.route("/admin/services")
@@ -353,7 +390,13 @@ def nouvelle_assurance():
 def rapports():
     if current_user.role != 'Administrateur': return redirect(url_for('main.dashboard'))
     rdv_stats = db.session.query(RendezVous.statut, db.func.count(RendezVous.id)).group_by(RendezVous.statut).all()
-    rev_stats = db.session.query(db.func.strftime('%Y-%m', Facture.date_facture), db.func.sum(Facture.montant_total)).group_by(db.func.strftime('%Y-%m', Facture.date_facture)).limit(6).all()
+    # Utilisation de to_char (PostgreSQL) au lieu de strftime (SQLite-only)
+    try:
+        period_label = db.func.to_char(Facture.date_facture, 'YYYY-MM')
+        rev_stats = db.session.query(period_label, db.func.sum(Facture.montant_total)).group_by(period_label).order_by(period_label.desc()).limit(6).all()
+    except Exception:
+        # Fallback SQLite pour environnement local
+        rev_stats = db.session.query(db.func.strftime('%Y-%m', Facture.date_facture), db.func.sum(Facture.montant_total)).group_by(db.func.strftime('%Y-%m', Facture.date_facture)).limit(6).all()
     gender_stats = db.session.query(Patient.sexe, db.func.count(Patient.id)).group_by(Patient.sexe).all()
     return render_template('admin/rapports.html', rdv_labels=[s[0] for s in rdv_stats], rdv_data=[s[1] for s in rdv_stats], rev_labels=[s[0] for s in rev_stats], rev_data=[s[1] for s in rev_stats], gender_labels=[('M' if s[0]=='M' else 'F') for s in gender_stats], gender_data=[s[1] for s in gender_stats])
 

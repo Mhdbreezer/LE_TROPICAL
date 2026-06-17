@@ -1,7 +1,7 @@
 from fpdf import FPDF
-from flask import send_file, current_app
-import os
-import uuid
+from flask import send_file
+import io
+
 
 class PDF(FPDF):
     def header(self):
@@ -12,13 +12,9 @@ class PDF(FPDF):
         self.rect(70, 0, 70, 5, 'F')
         
         # Star: Geometric drawing (polygon) to avoid Unicode issues
-        # Center approx (105, 2.5)
-        self.set_fill_color(0, 133, 63) # Star color (Green)
-        # Simplified star polygon points (relative to center 105, 2.5)
-        # Note: FPDF coordinates are absolute
         cx, cy = 105, 2.5
         star_points = [
-            [cx, cy - 2],    # Top
+            [cx, cy - 2],
             [cx + 0.5, cy - 0.5], 
             [cx + 2, cy - 0.5],
             [cx + 0.8, cy + 0.5],
@@ -29,6 +25,7 @@ class PDF(FPDF):
             [cx - 2, cy - 0.5],
             [cx - 0.5, cy - 0.5]
         ]
+        self.set_fill_color(0, 133, 63)
         self.polygon(star_points, style='F')
         
         self.set_fill_color(227, 27, 35)  # Red
@@ -38,14 +35,28 @@ class PDF(FPDF):
         self.ln(10)
         self.cell(0, 10, 'REPUBLIQUE DU SENEGAL', align='C', new_x="LMARGIN", new_y="NEXT")
         self.set_font('helvetica', 'I', 10)
-        self.cell(0, 5, 'Ministère de la Santé et de l\'Action Sociale', align='C', new_x="LMARGIN", new_y="NEXT")
+        self.cell(0, 5, "Ministere de la Sante et de l'Action Sociale", align='C', new_x="LMARGIN", new_y="NEXT")
         self.ln(10)
+
+
+def _pdf_to_response(pdf, filename):
+    """Convertit un objet PDF en réponse HTTP en mémoire (compatible Vercel)."""
+    pdf_bytes = pdf.output()  # Retourne des bytes directement
+    buffer = io.BytesIO(pdf_bytes)
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=filename,
+        mimetype='application/pdf'
+    )
+
 
 def generate_facture_pdf(facture):
     pdf = PDF()
     pdf.add_page()
     pdf.set_font('helvetica', 'B', 16)
-    pdf.cell(0, 10, f'FACTURE N° {facture.id}', new_x="LMARGIN", new_y="NEXT", align='C')
+    pdf.cell(0, 10, f'FACTURE N{chr(176)} {facture.id}', new_x="LMARGIN", new_y="NEXT", align='C')
     pdf.ln(10)
     
     patient = facture.consultation.rdv.patient
@@ -67,7 +78,7 @@ def generate_facture_pdf(facture):
     pdf.cell(0, 10, 'Montant (CFA)', border=1, new_x="LMARGIN", new_y="NEXT")
     
     pdf.set_font('helvetica', '', 12)
-    pdf.cell(100, 10, f'Consultation {facture.consultation.type_consult or "Générale"}', border=1)
+    pdf.cell(100, 10, f'Consultation {facture.consultation.type_consult or "Generale"}', border=1)
     pdf.cell(0, 10, f'{facture.montant_total}', border=1, new_x="LMARGIN", new_y="NEXT")
     
     pdf.ln(10)
@@ -84,15 +95,12 @@ def generate_facture_pdf(facture):
     
     pdf.ln(5)
     pdf.set_font('helvetica', 'B', 14)
-    pdf.set_text_color(227, 27, 35) # Red for total
+    pdf.set_text_color(227, 27, 35)
     pdf.cell(100, 10, 'NET A PAYER:', align='R')
     pdf.cell(0, 10, f'{reste_a_payer} CFA', align='R', new_x="LMARGIN", new_y="NEXT")
     
-    filename = f"facture_{facture.id}_{uuid.uuid4().hex}.pdf"
-    filepath = os.path.join(current_app.root_path, 'static', 'exports', filename)
-    pdf.output(filepath)
-    
-    return send_file(filepath, as_attachment=True)
+    return _pdf_to_response(pdf, f"facture_{facture.id}.pdf")
+
 
 def generate_ordonnance_pdf(ordonnance):
     pdf = PDF()
@@ -124,11 +132,8 @@ def generate_ordonnance_pdf(ordonnance):
     pdf.cell(0, 10, f'Dr {ordonnance.consultation.rdv.medecin.nom}', align='R', new_x="LMARGIN", new_y="NEXT")
     pdf.cell(0, 10, 'Cachet et Signature', align='R', new_x="LMARGIN", new_y="NEXT")
     
-    filename = f"ordonnance_{ordonnance.id}_{uuid.uuid4().hex}.pdf"
-    filepath = os.path.join(current_app.root_path, 'static', 'exports', filename)
-    pdf.output(filepath)
-    
-    return send_file(filepath, as_attachment=True)
+    return _pdf_to_response(pdf, f"ordonnance_{ordonnance.id}.pdf")
+
 
 def generate_dossier_pdf(patient):
     pdf = PDF()
@@ -145,7 +150,7 @@ def generate_dossier_pdf(patient):
     pdf.cell(100, 10, f'Nom complet: {patient.prenom} {patient.nom}')
     pdf.cell(0, 10, f'Sexe: {patient.sexe}', new_x="LMARGIN", new_y="NEXT")
     pdf.cell(100, 10, f'Date de naissance: {patient.date_naissance.strftime("%d/%m/%Y")}')
-    pdf.cell(0, 10, f'Téléphone: {patient.telephone}', new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(0, 10, f'Telephone: {patient.telephone}', new_x="LMARGIN", new_y="NEXT")
     pdf.cell(0, 10, f'Assurance: {patient.assurance.nom_assurance if patient.assurance else "Aucune"}', new_x="LMARGIN", new_y="NEXT")
     pdf.ln(5)
 
@@ -156,11 +161,11 @@ def generate_dossier_pdf(patient):
     pdf.set_font('helvetica', '', 12)
     
     if patient.dossier:
-        allergies = patient.dossier.allergies or "Néant"
-        antecedents = patient.dossier.antecedents or "Néant"
+        allergies = patient.dossier.allergies or "Neant"
+        antecedents = patient.dossier.antecedents or "Neant"
     else:
-        allergies = "Néant"
-        antecedents = "Néant"
+        allergies = "Neant"
+        antecedents = "Neant"
         
     pdf.ln(2)
     pdf.multi_cell(0, 10, f'Allergies: {allergies}', new_x="LMARGIN", new_y="NEXT")
@@ -178,9 +183,11 @@ def generate_dossier_pdf(patient):
             pdf.set_font('helvetica', 'B', 11)
             pdf.cell(0, 10, f'Date: {rdv.consultation.date_consultation.strftime("%d/%m/%Y")} - Dr {rdv.medecin.nom}', new_x="LMARGIN", new_y="NEXT")
             pdf.set_font('helvetica', 'I', 11)
-            pdf.multi_cell(0, 7, f'Diagnostic: {rdv.consultation.diagnostic or "Aucun"}', new_x="LMARGIN", new_y="NEXT")
+            diag = (rdv.consultation.diagnostic or "Aucun").encode('latin-1', errors='replace').decode('latin-1')
+            pdf.multi_cell(0, 7, f'Diagnostic: {diag}', new_x="LMARGIN", new_y="NEXT")
             pdf.set_font('helvetica', '', 10)
-            pdf.multi_cell(0, 7, f'Observations: {rdv.consultation.observations or "Aucune"}', new_x="LMARGIN", new_y="NEXT")
+            obs = (rdv.consultation.observations or "Aucune").encode('latin-1', errors='replace').decode('latin-1')
+            pdf.multi_cell(0, 7, f'Observations: {obs}', new_x="LMARGIN", new_y="NEXT")
             
             if rdv.consultation.ordonnance:
                 pdf.set_font('helvetica', 'B', 10)
@@ -189,14 +196,11 @@ def generate_dossier_pdf(patient):
                 for ligne in rdv.consultation.ordonnance.lignes:
                     pdf.cell(0, 5, f'  - {ligne.medicament.nom_medicament} ({ligne.medicament.dosage}): {ligne.posologie}', new_x="LMARGIN", new_y="NEXT")
             pdf.ln(3)
-            pdf.cell(0, 0, '', 'T', new_x="LMARGIN", new_y="NEXT") # Divider line
+            pdf.cell(0, 0, '', 'T', new_x="LMARGIN", new_y="NEXT")
             pdf.ln(2)
 
-    filename = f"dossier_{patient.id}_{uuid.uuid4().hex}.pdf"
-    filepath = os.path.join(current_app.root_path, 'static', 'exports', filename)
-    pdf.output(filepath)
-    
-    return send_file(filepath, as_attachment=True)
+    return _pdf_to_response(pdf, f"dossier_{patient.id}.pdf")
+
 
 def envoyer_notification(utilisateur_cible, message):
     """
@@ -217,7 +221,6 @@ def envoyer_notification(utilisateur_cible, message):
             user = u_attr
     
     if not user:
-        # Recherche directe en base si c'est un Medecin ou Patient
         from app.models import Medecin, Patient
         if isinstance(utilisateur_cible, Medecin):
             user = Utilisateur.query.filter_by(medecin_id=utilisateur_cible.id).first()
@@ -230,5 +233,4 @@ def envoyer_notification(utilisateur_cible, message):
         db.session.commit()
         print(f"NOTIFICATION PERSISTEE [User: {user.username}]: {message}")
     else:
-        print(f"ALERTE: Impossible d'envoyer une notification à {utilisateur_cible} (compte utilisateur introuvable).")
-
+        print(f"ALERTE: Impossible d'envoyer une notification a {utilisateur_cible} (compte utilisateur introuvable).")

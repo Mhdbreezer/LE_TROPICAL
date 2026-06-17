@@ -40,11 +40,16 @@ body {
    NAVBAR (Liquid Glass)
 ========================================== */
 .glass-nav {
-    background: rgba(0, 0, 0, 0.2) !important;
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.35) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
     transition: all 0.3s ease;
+    margin: 20px auto !important;
+    width: 95% !important;
+    max-width: 1300px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
 .nav-hover {

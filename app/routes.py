@@ -661,9 +661,9 @@ def caisse_recherche():
     fid = request.args.get('facture_id')
     if fid:
         f = Facture.query.get(fid)
-        if f: return redirect(url_for('main.caisse_factures') + f'#payModal{f.id}')
+        if f: return redirect(url_for('main.pdf_facture', facture_id=f.id))
         flash('Non trouvée.', 'danger')
-    return redirect(url_for('main.caisse_factures'))
+    return redirect(url_for('main.dashboard'))
 
 @main.route("/notifications/marquer-lu", methods=['POST'])
 @login_required

@@ -21,6 +21,11 @@ def migrate_columns():
             conn.execute(text("ALTER TABLE rendez_vous ALTER COLUMN type_rdv TYPE VARCHAR(30)"))
             conn.execute(text("ALTER TABLE facture ALTER COLUMN statut TYPE VARCHAR(30)"))
             conn.execute(text("ALTER TABLE file_attente ALTER COLUMN statut TYPE VARCHAR(30)"))
+            # Migration pour la téléconsultation (ignore l'erreur si la colonne existe déjà)
+            try:
+                conn.execute(text("ALTER TABLE rendez_vous ADD COLUMN lien_video VARCHAR(255)"))
+            except:
+                pass
             conn.commit()
         return "✅ Migration réussie ! Toutes les colonnes VARCHAR corrigées."
     except Exception as e:
@@ -250,12 +255,36 @@ def historique_rdvs():
 @main.route("/rdv/valider/<int:rdv_id>", methods=['POST'])
 @login_required
 def valider_rdv(rdv_id):
+    import uuid
     if current_user.role != 'Medecin': return redirect(url_for('main.dashboard'))
     rdv = RendezVous.query.get_or_404(rdv_id)
     rdv.statut = 'Programmé'
+    
+    msg = f"RDV confirmé pour le {rdv.date_rdv.strftime('%d/%m/%Y')}."
+    if rdv.type_rdv == 'Téléconsultation':
+        rdv.lien_video = f"tropical_teleconsult_{uuid.uuid4().hex[:12]}"
+        msg = f"Téléconsultation validée. Lien d'accès : /teleconsultation/{rdv.id}"
+        
     db.session.commit()
-    envoyer_notification(rdv.patient, f"RDV confirmé pour le {rdv.date_rdv.strftime('%d/%m/%Y')}.")
+    envoyer_notification(rdv.patient, msg)
     return redirect(url_for('main.list_rdvs'))
+
+@main.route("/teleconsultation/<int:rdv_id>")
+@login_required
+def teleconsultation(rdv_id):
+    rdv = RendezVous.query.get_or_404(rdv_id)
+    if not rdv.lien_video:
+        flash("Ce rendez-vous n'est pas une téléconsultation valide.", "danger")
+        return redirect(url_for('main.dashboard'))
+    
+    # Seul le patient concerné ou le médecin assigné peut accéder
+    if current_user.role == 'Patient' and current_user.patient_id != rdv.patient_id:
+        return redirect(url_for('main.dashboard'))
+    if current_user.role == 'Medecin' and current_user.medecin_id != rdv.medecin_id:
+        return redirect(url_for('main.dashboard'))
+        
+    form = ConsultationForm() if current_user.role == 'Medecin' else None
+    return render_template('teleconsultation.html', rdv=rdv, form=form, title=f"Téléconsultation - {rdv.patient.prenom} {rdv.patient.nom}")
 
 @main.route("/rdv/refuser/<int:rdv_id>", methods=['POST'])
 @login_required

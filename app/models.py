@@ -81,6 +81,7 @@ class RendezVous(db.Model):
     type_rdv = db.Column(db.String(30), default='Présentiel') # Présentiel, Téléconsultation
     priorite = db.Column(db.Integer, default=1)
     degre_urgence = db.Column(db.String(20), default='Normal') # Normal, Moyen, Critique (Triage)
+    lien_video = db.Column(db.String(255), nullable=True) # Lien Jitsi pour la téléconsultation
     
     patient_id = db.Column(db.Integer, db.ForeignKey('patient.id'), nullable=False)
     medecin_id = db.Column(db.Integer, db.ForeignKey('medecin.id'), nullable=False)

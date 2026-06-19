@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row h-100">
+    <!-- Section Vidéo (Jitsi Meet) -->
+    <div class="col-md-{{ '7' if current_user.role == 'Medecin' else '12' }} mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold"><i class="fas fa-video me-2"></i> Téléconsultation en cours</h5>
+                {% if current_user.role == 'Patient' %}
+                    <span class="badge bg-warning text-dark">En attente du médecin...</span>
+                {% else %}
+                    <span class="badge bg-success">En direct</span>
+                {% endif %}
+            </div>
+            <div class="card-body p-0" id="jitsi-container" style="min-height: 600px;">
+                <!-- Jitsi will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Diagnostic / Ordonnance (Visible uniquement par le médecin) -->
+    {% if current_user.role == 'Medecin' %}
+    <div class="col-md-5">
+        <div class="card border-0 shadow-sm h-100" style="overflow-y: auto; max-height: 80vh;">
+            <div class="card-body p-4">
+                <h4 class="fw-bold mb-4 text-primary">Dossier de Consultation</h4>
+                <p class="text-muted mb-4">Patient : <strong>{{ rdv.patient.prenom }} {{ rdv.patient.nom }}</strong></p>
+
+                <form method="POST" action="{{ url_for('main.nouvelle_consultation', rdv_id=rdv.id) }}">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.diagnostic.label(class="form-label fw-bold") }}
+                        {{ form.diagnostic(class="form-control", rows="5", placeholder="Saisissez votre diagnostic ici...") }}
+                    </div>
+                    <div class="mb-4">
+                        {{ form.observations.label(class="form-label fw-bold") }}
+                        {{ form.observations(class="form-control", rows="3", placeholder="Observations complémentaires, constantes...") }}
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> L'ordonnance pourra être ajoutée sur la page suivante après validation.
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        {{ form.submit(class="btn btn-primary btn-lg fw-bold", value="Enregistrer la consultation") }}
+                        <a href="{{ url_for('main.list_rdvs') }}" class="btn btn-outline-secondary">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- API Jitsi Meet -->
+<script src="https://meet.jit.si/external_api.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const domain = 'meet.jit.si';
+        const options = {
+            roomName: '{{ rdv.lien_video }}',
+            width: '100%',
+            height: '100%',
+            parentNode: document.querySelector('#jitsi-container'),
+            userInfo: {
+                displayName: '{{ current_user.role }} - {{ current_user.username }}'
+            },
+            configOverwrite: {
+                startWithAudioMuted: false,
+                startWithVideoMuted: false,
+                prejoinPageEnabled: false, // Passer la page de préparation
+            },
+            interfaceConfigOverwrite: {
+                SHOW_CHROME_EXTENSION_BANNER: false
+            }
+        };
+        const api = new JitsiMeetExternalAPI(domain, options);
+    });
+</script>
+{% endblock %}

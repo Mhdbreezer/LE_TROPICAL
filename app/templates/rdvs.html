@@ -72,7 +72,7 @@
                                 {% if rdv.type_rdv != 'Téléconsultation' %}
                                     <a href="{{ url_for('main.nouvelle_consultation', rdv_id=rdv.id) }}" class="btn btn-sm btn-success">Consulter</a>
                                 {% else %}
-                                    <a href="https://meet.jit.si/SGRDMS-Tropical-{{ rdv.id }}" target="_blank" class="btn btn-sm btn-info text-white">Vidéo-consultation</a>
+                                    <a href="{{ url_for('main.teleconsultation', rdv_id=rdv.id) }}" class="btn btn-sm btn-info text-white">Vidéo-consultation</a>
                                 {% endif %}
                             {% endif %}
                             

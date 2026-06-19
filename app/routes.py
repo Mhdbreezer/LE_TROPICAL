@@ -671,9 +671,24 @@ def marquer_notifications_lues():
     for notif in current_user.notifications: notif.lu = True
     db.session.commit(); return redirect(request.referrer or url_for('main.dashboard'))
 
+@main.route("/notification/lire/<int:notif_id>", methods=['POST'])
+@login_required
+def lire_notification(notif_id):
+    notif = Notification.query.get_or_404(notif_id)
+    if notif.user_id != current_user.id:
+        return redirect(url_for('main.dashboard'))
+    notif.lu = True
+    db.session.commit()
+    # Si la notification contient un lien de téléconsultation, rediriger
+    import re
+    match = re.search(r'/teleconsultation/(\d+)', notif.message)
+    if match:
+        return redirect(url_for('main.teleconsultation', rdv_id=int(match.group(1))))
+    return redirect(request.referrer or url_for('main.dashboard'))
+
 @main.app_context_processor
 def inject_notifications():
-    if current_user.is_authenticated: return dict(unread_notifications=[n for n in current_user.notifications if not n.lu])
+    if current_user.is_authenticated: return dict(unread_notifications=sorted([n for n in current_user.notifications if not n.lu], key=lambda x: x.date_notif, reverse=True))
     return dict(unread_notifications=[])
 
 

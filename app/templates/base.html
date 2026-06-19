@@ -689,10 +689,12 @@
                         </div>
                         <div class="list-group list-group-flush">
                             {% for n in unread_notifications %}
-                            <div class="list-group-item p-3">
+                            <form action="{{ url_for('main.lire_notification', notif_id=n.id) }}" method="POST" class="m-0">
+                            <button type="submit" class="list-group-item list-group-item-action p-3 border-0 w-100 text-start" style="cursor: pointer;">
                                 <p class="mb-1 small">{{ n.message }}</p>
                                 <small class="text-muted">{{ n.date_notif.strftime('%d/%m %H:%M') }}</small>
-                            </div>
+                            </button>
+                            </form>
                             {% else %}
                             <div class="p-4 text-center text-muted">
                                 <i class="bi bi-check-circle mb-2 fs-2 d-block"></i>

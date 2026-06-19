@@ -10,7 +10,9 @@
             <a href="{{ url_for('main.list_rdvs') }}" class="btn btn-outline-senegal shadow-sm">Planning du jour</a>
         {% else %}
             <a href="{{ url_for('main.historique_rdvs') }}" class="btn btn-outline-secondary shadow-sm">Voir Historique</a>
+            {% if current_user.role != 'Medecin' %}
             <a href="{{ url_for('main.nouveau_rdv') }}" class="btn btn-senegal shadow-sm">+ Planifier un RDV</a>
+            {% endif %}
         {% endif %}
     </div>
 </div>

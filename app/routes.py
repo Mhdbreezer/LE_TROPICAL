@@ -568,14 +568,45 @@ def nouveau_medicament():
     if current_user.role not in ['Pharmacien', 'Administrateur']: return redirect(url_for('main.dashboard'))
     form = MedicamentForm()
     if form.validate_on_submit():
-        nom = form.nom_medicament.data.strip().lower()
-        med = Medicament.query.filter(db.func.lower(Medicament.nom_medicament) == nom, db.func.lower(Medicament.forme) == form.forme.data.lower(), db.func.lower(Medicament.dosage) == form.dosage.data.lower()).first()
-        if med: med.seuil_alerte = form.seuil_alerte.data
+        nom = (form.nom_medicament.data or '').strip().lower()
+        forme_val = (form.forme.data or '').strip().lower()
+        dosage_val = (form.dosage.data or '').strip().lower()
+
+        # Construction de la requête pour ignorer la casse et gérer les champs vides
+        query = Medicament.query.filter(db.func.lower(Medicament.nom_medicament) == nom)
+        if forme_val: query = query.filter(db.func.lower(Medicament.forme) == forme_val)
+        else: query = query.filter((Medicament.forme == None) | (Medicament.forme == ''))
+        
+        if dosage_val: query = query.filter(db.func.lower(Medicament.dosage) == dosage_val)
+        else: query = query.filter((Medicament.dosage == None) | (Medicament.dosage == ''))
+
+        med = query.first()
+        qte = form.quantite_a_ajouter.data or 0
+
+        if med:
+            med.seuil_alerte = form.seuil_alerte.data
+            flash(f"Le médicament {med.nom_medicament} existe déjà ! Le stock a été mis à jour (+{qte}).", "info")
         else:
-            med = Medicament(nom_medicament=form.nom_medicament.data.strip(), forme=form.forme.data.strip(), dosage=form.dosage.data.strip(), seuil_alerte=form.seuil_alerte.data)
-            db.session.add(med); db.session.commit()
-        if form.quantite_a_ajouter.data > 0: db.session.add(LotMedicament(medicament_id=med.id, qte_initiale=form.quantite_a_ajouter.data, qte_restante=form.quantite_a_ajouter.data, date_expiration=datetime.now().date()))
-        db.session.commit(); return redirect(url_for('main.pharmacie_inventaire'))
+            med = Medicament(
+                nom_medicament=form.nom_medicament.data.strip(),
+                forme=form.forme.data.strip() if form.forme.data else '',
+                dosage=form.dosage.data.strip() if form.dosage.data else '',
+                seuil_alerte=form.seuil_alerte.data
+            )
+            db.session.add(med)
+            db.session.commit()
+            flash("Nouveau médicament ajouté à l'inventaire avec succès.", "success")
+            
+        if qte > 0:
+            db.session.add(LotMedicament(
+                medicament_id=med.id, 
+                qte_initiale=qte, 
+                qte_restante=qte, 
+                date_expiration=datetime.now().date()
+            ))
+            
+        db.session.commit()
+        return redirect(url_for('main.pharmacie_inventaire'))
     return render_template('medicament_form.html', form=form, title='Ajouter au Stock')
 
 @main.route("/pharmacie/ordonnances")

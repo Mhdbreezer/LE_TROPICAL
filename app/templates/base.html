@@ -9,8 +9,8 @@
     <style>
         :root {
             --button-gradient: linear-gradient(135deg, #38BDF8 0%, #2563EB 100%);
-            --text-color: #1e293b;
-            --text-muted-color: #475569;
+            --text-color: #ffffff;
+            --text-muted-color: #ffffff;
             --accent: #2563EB;
             --sidebar-width: 260px;
             --sidebar-collapsed-width: 70px;
@@ -22,15 +22,25 @@
             --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
-        body {
-            /* Médecin noir + digitalisation - image claire */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
             background-image:
-                linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,10,30,0.5) 100%),
-                url("{{ url_for('static', filename='img/medecin_digital.jpg') }}");
+                linear-gradient(135deg, rgba(0,0,0,0.65) 0%, rgba(0,10,30,0.75) 100%),
+                url("{{ url_for('static', filename='img/hopital_clair.jpg') }}");
             background-size: cover;
             background-position: center center;
             background-attachment: fixed;
             background-repeat: no-repeat;
+            filter: blur(8px);
+            transform: scale(1.05);
+            z-index: -1;
+        }
+
+        body {
+            /* Médecin noir + digitalisation - image claire */
+            background-color: #050a15;
             overflow-x: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #ffffff;
@@ -44,7 +54,7 @@
 
         .fw-bold { color: #ffffff !important; }
 
-        .text-muted { color: rgba(255,255,255,0.65) !important; }
+        .text-muted { color: #ffffff !important; }
 
         .text-white { color: #ffffff !important; }
 
@@ -60,10 +70,10 @@
             left: 15px; top: 15px;
             border-radius: 24px;
             z-index: 1000;
-            background: rgba(255, 255, 255, 0.18);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.1) 100%);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255,255,255,0.35);
+            border: 1px solid rgba(255, 255, 255, 0.35);
             box-shadow: var(--glass-shadow);
             display: flex;
             flex-direction: column;
@@ -113,7 +123,7 @@
             padding: 12px 20px;
             display: flex;
             align-items: center;
-            color: rgba(255,255,255,0.7);
+            color: rgba(255,255,255,0.95);
             text-decoration: none;
             transition: all 0.2s;
             border-left: 4px solid transparent;
@@ -152,7 +162,7 @@
         /* ======== TOP NAVBAR ======== */
         .top-navbar {
             height: var(--top-nav-height);
-            background: rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.1) 100%);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             display: flex;
@@ -164,13 +174,13 @@
             z-index: 999;
             margin: 20px 30px;
             border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.4);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             color: #ffffff;
         }
 
         .top-navbar .fw-bold,
         .top-navbar .text-uppercase { color: #ffffff !important; }
-        .top-navbar .text-muted { color: rgba(255,255,255,0.65) !important; }
+        .top-navbar .text-muted { color: rgba(255,255,255,0.95) !important; font-weight: 500; }
 
         .dropdown-menu {
             background: rgba(15, 23, 42, 0.85) !important;
@@ -193,7 +203,7 @@
 
         .dropdown-menu .fw-bold,
         .dropdown-menu p { color: #ffffff !important; }
-        .dropdown-menu .text-muted { color: rgba(255,255,255,0.65) !important; }
+        .dropdown-menu .text-muted { color: rgba(255,255,255,0.95) !important; font-weight: 500; }
 
         .top-navbar .dropdown-menu .list-group-item {
             background: transparent !important;
@@ -213,7 +223,8 @@
         }
 
         .list-group-item small, .list-group-item .text-muted {
-            color: rgba(255,255,255,0.65) !important;
+            color: rgba(255,255,255,0.95) !important;
+            font-weight: 500;
         }
 
         .top-navbar .btn-light {
@@ -241,24 +252,24 @@
 
         /* ======== CARDS ======== */
         .card {
-            background: rgba(255, 255, 255, 0.18) !important;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.10) 100%) !important;
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-            border: 1px solid rgba(255,255,255,0.35);
-            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.35) !important;
+            transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
             color: #ffffff !important;
         }
 
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 16px 48px rgba(0,0,0,0.2);
-            background: rgba(255, 255, 255, 0.28) !important;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.15) 100%) !important;
         }
 
         .card * { color: #ffffff !important; }
-        .card .text-muted { color: rgba(255,255,255,0.65) !important; }
+        .card .text-muted { color: rgba(255,255,255,0.95) !important; font-weight: 500; }
 
         /* ======== TABLES ======== */
         .table { color: #ffffff !important; }
@@ -424,49 +435,55 @@
 
         /* ======== FORMULAIRES — Liquid Glass ======== */
         .form-control, .form-select {
-            background: rgba(255, 255, 255, 0.12) !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 2px solid rgba(255, 255, 255, 0.4) !important;
+            color: #0f172a !important; /* Texte sombre (presque noir) */
+            font-weight: 600; /* Plus gras pour être lu de loin */
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-radius: 8px;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .form-control::placeholder { 
-            color: rgba(255, 255, 255, 0.5) !important; 
+            color: rgba(15, 23, 42, 0.55) !important; /* Placeholder gris foncé */
+            font-weight: 500;
         }
 
         .form-control:focus, .form-select:focus {
-            background: rgba(255, 255, 255, 0.2) !important;
-            border-color: rgba(56, 189, 248, 0.8) !important;
-            box-shadow: 0 0 0 0.2rem rgba(56,189,248,0.25), inset 0 1px 0 rgba(255,255,255,0.2) !important;
-            color: #ffffff !important;
+            background: #ffffff !important;
+            border-color: #38bdf8 !important; /* Bordure bleue au focus */
+            box-shadow: 0 0 0 4px rgba(56,189,248,0.3) !important;
+            color: #000000 !important;
         }
 
         .input-group-text {
-            background: rgba(255, 255, 255, 0.12) !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 2px solid rgba(255, 255, 255, 0.4) !important;
+            color: #0f172a !important;
+            font-weight: 600;
             backdrop-filter: blur(12px);
         }
 
         .form-label, label {
             color: #ffffff !important;
-            font-weight: 500;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+            font-weight: 600;
+            font-size: 1.05rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8); /* Ombre plus forte sur les libellés */
         }
 
         /* Options dans les selects */
         .form-select option {
-            background: #0f172a !important;
-            color: #ffffff !important;
+            background: #ffffff !important;
+            color: #0f172a !important;
+            font-weight: 500;
         }
 
         /* Checkboxes et radios */
         .form-check-label {
             color: #ffffff !important;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            font-weight: 500;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
         }
 
         .form-label { color: #ffffff !important; font-weight: 500; }
@@ -515,16 +532,28 @@
 
         /* ======== AUTH PAGE ======== */
         .auth-bg {
-            background-image:
-                linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 100%),
-                url("{{ url_for('static', filename='img/medecin_digital.jpg') }}");
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
+            position: relative;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .auth-bg::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(135deg, rgba(0,0,0,0.65) 0%, rgba(0,10,30,0.75) 100%),
+                url("{{ url_for('static', filename='img/hopital_clair.jpg') }}");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            filter: blur(8px);
+            transform: scale(1.05);
+            z-index: -1;
         }
     </style>
 </head>

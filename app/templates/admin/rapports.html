@@ -54,6 +54,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    // Set global default text color to pure white
+    Chart.defaults.color = '#ffffff';
+
     // RDV Chart
     new Chart(document.getElementById('rdvChart'), {
         type: 'doughnut',

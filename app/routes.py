@@ -419,11 +419,14 @@ def rapports():
     rdv_stats = db.session.query(RendezVous.statut, db.func.count(RendezVous.id)).group_by(RendezVous.statut).all()
     # Utilisation de to_char (PostgreSQL) au lieu de strftime (SQLite-only)
     try:
-        period_label = db.func.to_char(Facture.date_facture, 'YYYY-MM')
-        rev_stats = db.session.query(period_label, db.func.sum(Facture.montant_total)).group_by(period_label).order_by(period_label.desc()).limit(6).all()
+        period_label = db.func.to_char(Facture.date_facture, 'YYYY-MM-DD')
+        rev_stats = db.session.query(period_label, db.func.sum(Facture.montant_total)).group_by(period_label).order_by(period_label.desc()).limit(14).all()
     except Exception:
         # Fallback SQLite pour environnement local
-        rev_stats = db.session.query(db.func.strftime('%Y-%m', Facture.date_facture), db.func.sum(Facture.montant_total)).group_by(db.func.strftime('%Y-%m', Facture.date_facture)).limit(6).all()
+        rev_stats = db.session.query(db.func.strftime('%Y-%m-%d', Facture.date_facture), db.func.sum(Facture.montant_total)).group_by(db.func.strftime('%Y-%m-%d', Facture.date_facture)).order_by(db.func.strftime('%Y-%m-%d', Facture.date_facture).desc()).limit(14).all()
+    
+    # Inverser pour avoir l'ordre chronologique sur le graphique (de gauche à droite)
+    rev_stats.reverse()
     gender_stats = db.session.query(Patient.sexe, db.func.count(Patient.id)).group_by(Patient.sexe).all()
     return render_template('admin/rapports.html', rdv_labels=[s[0] for s in rdv_stats], rdv_data=[s[1] for s in rdv_stats], rev_labels=[s[0] for s in rev_stats], rev_data=[s[1] for s in rev_stats], gender_labels=[('M' if s[0]=='M' else 'F') for s in gender_stats], gender_data=[s[1] for s in gender_stats])
 

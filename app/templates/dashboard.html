@@ -200,6 +200,10 @@
                     <span class="qa-icon"><i class="bi bi-clock-history"></i></span>
                     <span>Voir mes RDV passés</span>
                 </a>
+                <a href="{{ url_for('main.pdf_dossier', patient_id=current_user.patient_id) }}" target="_blank" class="quick-action-btn qa-green">
+                    <span class="qa-icon"><i class="bi bi-file-earmark-pdf-fill"></i></span>
+                    <span>Télécharger mon Dossier (PDF)</span>
+                </a>
 
                 {% elif role == 'Administrateur' %}
                 <a href="{{ url_for('main.list_medecins') }}" class="quick-action-btn qa-blue">

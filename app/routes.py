@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, url_for, flash, redirect, request
 from app import db, bcrypt
-from app.models import Utilisateur, Patient, Medecin, RendezVous, DossierMedical, Consultation, Ordonnance, LigneOrdonnance, Medicament, Facture, Interaction, Service, Centre, Assurance, LotMedicament, Notification
+from app.models import Utilisateur, Patient, Medecin, RendezVous, DossierMedical, Consultation, Ordonnance, LigneOrdonnance, Medicament, Facture, Interaction, Service, Centre, Assurance, LotMedicament, Notification, FileAttente, Disponibilite
 from app.forms import PatientForm, RDVForm, ConsultationForm, OrdonnanceLineForm, MedicamentForm, ServiceForm, MedecinForm, AssuranceForm, UrgenceForm, UtilisateurForm
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime, timedelta
@@ -58,6 +58,36 @@ def db_init_route():
             return "Base Postgres initialisée ! Connectez-vous avec admin / admin123"
         else:
             return "La base est déjà prête. L'utilisateur admin existe déjà."
+
+@main.route("/admin/reset-db-prod")
+@login_required
+def reset_db_prod():
+    if current_user.role != 'Administrateur':
+        return "Accès refusé.", 403
+    try:
+        Notification.query.delete()
+        LigneOrdonnance.query.delete()
+        Ordonnance.query.delete()
+        Facture.query.delete()
+        Consultation.query.delete()
+        DossierMedical.query.delete()
+        RendezVous.query.delete()
+        Disponibilite.query.delete()
+        FileAttente.query.delete()
+        
+        # Supprimer tous les utilisateurs sauf admin
+        Utilisateur.query.filter(Utilisateur.username != 'admin').delete(synchronize_session=False)
+        
+        Patient.query.delete()
+        Medecin.query.delete()
+        
+        db.session.commit()
+        flash("La base de données a été réinitialisée avec succès (seul l'admin a été conservé).", "success")
+        return redirect(url_for('main.dashboard'))
+    except Exception as e:
+        db.session.rollback()
+        return f"Erreur lors de la réinitialisation : {str(e)}", 500
+
             
     except Exception as e:
         db.session.rollback()
